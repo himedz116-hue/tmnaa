@@ -29,7 +29,8 @@ export function HeroSection() {
         <img
           src={heroBgImg}
           alt=""
-          className="w-full h-full object-cover"
+          className="w-full h-full object-contain object-center"
+          style={{ background: '#050505' }}
         />
         {/* Dark Overlays */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/80" />
