@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/"
+title = "TMNAA — Rise With Fire"
+version = "1.0.0"
+id = "artifacts/tmnaa"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19386
+
+[services.development]
+run = "pnpm --filter @workspace/tmnaa run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/tmnaa", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/tmnaa/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19386"
+BASE_PATH = "/"
