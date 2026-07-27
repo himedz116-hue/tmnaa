@@ -2,7 +2,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 import { ForgedButton } from '@/components/ui/ForgedButton';
 import { EmberCanvas } from '@/components/EmberCanvas';
-import heroBgImg from '@assets/Create_design_for_phone_2K_202607270558_1785158973330.jpeg';
+import heroBgImg from '@assets/TMNAA_website_UI_header_2K_202607271838_1785166733964.jpeg';
 import logoGlowImg from '@assets/B2F8BEA4-C623-4DC4-B192-1161574A65A6_1785158979040.png';
 
 export function HeroSection() {
