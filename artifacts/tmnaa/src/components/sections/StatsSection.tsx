@@ -146,7 +146,11 @@ function LeaderboardCard({ title, subtitle, data, icon, accentColor, isMain, del
         </div>
       </div>
 
-      <div className={`flex-1 p-2 md:p-3 space-y-1.5 md:space-y-2 relative overflow-y-auto overflow-x-hidden max-h-[300px] md:max-h-[400px] premium-scroll-${accentColor}`}>
+      <div className={`flex-1 p-2 md:p-3 space-y-1.5 md:space-y-2 relative overflow-y-auto overflow-x-hidden max-h-[300px] md:max-h-[400px] premium-scroll`}
+        style={{
+          '--scr-from': accentColor === 'yellow' ? 'rgba(234,179,8,0.4)' : accentColor === 'rose' ? 'rgba(225,29,72,0.4)' : 'rgba(6,182,212,0.4)',
+          '--scr-to': accentColor === 'yellow' ? 'rgba(234,179,8,0.15)' : accentColor === 'rose' ? 'rgba(225,29,72,0.15)' : 'rgba(6,182,212,0.15)',
+        } as React.CSSProperties}>
         {sorted.map((entry, idx) => {
           const isTop3 = idx < 3;
           return (
