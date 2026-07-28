@@ -509,3 +509,27 @@
 .premium-btn:hover::after {
   opacity: 1;
 }
+
+/* Premium Custom Scrollbar */
+.premium-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.premium-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.premium-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, rgba(83, 252, 24, 0.3), rgba(83, 252, 24, 0.1));
+  border-radius: 99px;
+  transition: background 0.3s ease;
+}
+
+.premium-scroll::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, rgba(83, 252, 24, 0.5), rgba(83, 252, 24, 0.2));
+}
+
+.premium-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(83, 252, 24, 0.3) transparent;
+}

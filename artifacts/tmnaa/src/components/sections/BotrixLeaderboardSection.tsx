@@ -182,7 +182,7 @@ export function BotrixLeaderboard() {
           )}
 
           {data && data.length > 0 && (
-            <div className="space-y-2 max-h-[600px] overflow-y-auto scrollbar-hide">
+            <div className="space-y-2 max-h-[600px] overflow-y-auto overflow-x-hidden premium-scroll">
               {sorted.map((entry, idx) => {
                 const isTop3 = idx < 3;
                 const avatarUrl = getAvatar(entry.name);
