@@ -528,14 +528,14 @@
   scrollbar-width: thin;
 }
 
-/* Gold scrollbar */
-.premium-scroll-gold::-webkit-scrollbar { width: 4px; }
-.premium-scroll-gold::-webkit-scrollbar-track { background: transparent; }
-.premium-scroll-gold::-webkit-scrollbar-thumb {
+/* Yellow/Gold scrollbar */
+.premium-scroll-yellow::-webkit-scrollbar { width: 4px; }
+.premium-scroll-yellow::-webkit-scrollbar-track { background: transparent; }
+.premium-scroll-yellow::-webkit-scrollbar-thumb {
   background: linear-gradient(to bottom, rgba(234,179,8,0.4), rgba(234,179,8,0.15));
   border-radius: 99px;
 }
-.premium-scroll-gold { scrollbar-width: thin; scrollbar-color: rgba(234,179,8,0.4) transparent; }
+.premium-scroll-yellow { scrollbar-width: thin; scrollbar-color: rgba(234,179,8,0.4) transparent; }
 
 /* Rose scrollbar */
 .premium-scroll-rose::-webkit-scrollbar { width: 4px; }
