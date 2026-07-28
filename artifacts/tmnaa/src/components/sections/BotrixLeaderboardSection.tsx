@@ -262,28 +262,28 @@ export function BotrixLeaderboard() {
                       </div>
                     </div>
 
-                    <div className={`shrink-0 flex flex-col items-center gap-1 rounded-xl px-3 md:px-4 py-2.5 md:py-3 border transition-all duration-300 ${
+                    <div className={`shrink-0 flex items-center gap-2 md:gap-2.5 rounded-lg md:rounded-xl px-2.5 md:px-3.5 py-2 md:py-2.5 border transition-all duration-300 ${
                       idx === 0
-                        ? 'bg-gradient-to-b from-[#53FC18]/10 to-[#53FC18]/5 border-[#53FC18]/25 shadow-[0_0_25px_rgba(83,252,24,0.08)]'
+                        ? 'bg-gradient-to-r from-[#53FC18]/12 to-[#53FC18]/5 border-[#53FC18]/30 shadow-[0_0_25px_rgba(83,252,24,0.1)]'
                         : isTop3
-                          ? 'bg-white/[0.03] border-white/[0.08] group-hover/row:border-white/[0.12]'
-                          : 'bg-black/30 border-white/[0.04] group-hover/row:border-white/[0.08]'
+                          ? 'bg-white/[0.04] border-white/[0.1] group-hover/row:border-white/[0.15]'
+                          : 'bg-black/40 border-white/[0.05] group-hover/row:border-white/[0.1]'
                     }`}>
                       <svg className={`w-3.5 h-3.5 md:w-4 md:h-4 ${
-                        idx === 0 ? 'text-[#53FC18] drop-shadow-[0_0_8px_rgba(83,252,24,0.3)]' : 'text-white/20'
+                        idx === 0 ? 'text-[#53FC18] drop-shadow-[0_0_8px_rgba(83,252,24,0.3)]' : 'text-white/25'
                       }`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                         <circle cx="12" cy="12" r="10" />
                         <path d="M12 6v6l4 2" />
                       </svg>
-                      <span className={`text-[9px] md:text-[10px] font-black tracking-tight leading-none ${
-                        idx === 0 ? 'text-[#53FC18] drop-shadow-[0_0_10px_rgba(83,252,24,0.3)]' : 'text-white/40'
+                      <span className={`text-xs md:text-sm font-black tracking-tight leading-none ${
+                        idx === 0 ? 'text-[#53FC18] drop-shadow-[0_0_10px_rgba(83,252,24,0.3)]' : 'text-white/60'
                       }`}>
                         {formatDuration(entry.watchtime)}
                       </span>
                       {idx === 0 && (
-                        <span className="relative flex h-1 w-1">
+                        <span className="relative flex h-1.5 w-1.5 md:h-2 md:w-2">
                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#53FC18] opacity-75" />
-                          <span className="relative inline-flex rounded-full h-1 w-1 bg-[#53FC18]" />
+                          <span className="relative inline-flex rounded-full h-1.5 w-1.5 md:h-2 md:w-2 bg-[#53FC18]" />
                         </span>
                       )}
                     </div>
