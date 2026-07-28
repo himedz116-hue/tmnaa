@@ -146,7 +146,7 @@ function LeaderboardCard({ title, subtitle, data, icon, accentColor, isMain, del
         </div>
       </div>
 
-      <div className="flex-1 p-2 md:p-3 space-y-1.5 md:space-y-2 relative overflow-y-auto max-h-[300px] md:max-h-[400px] scrollbar-hide">
+      <div className={`flex-1 p-2 md:p-3 space-y-1.5 md:space-y-2 relative overflow-y-auto overflow-x-hidden max-h-[300px] md:max-h-[400px] premium-scroll-${accentColor}`}>
         {sorted.map((entry, idx) => {
           const isTop3 = idx < 3;
           return (

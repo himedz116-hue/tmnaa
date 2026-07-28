@@ -514,22 +514,43 @@
 .premium-scroll::-webkit-scrollbar {
   width: 4px;
 }
-
 .premium-scroll::-webkit-scrollbar-track {
   background: transparent;
 }
-
 .premium-scroll::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, rgba(83, 252, 24, 0.3), rgba(83, 252, 24, 0.1));
   border-radius: 99px;
   transition: background 0.3s ease;
 }
-
 .premium-scroll::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(to bottom, rgba(83, 252, 24, 0.5), rgba(83, 252, 24, 0.2));
+  opacity: 0.8;
 }
-
 .premium-scroll {
   scrollbar-width: thin;
-  scrollbar-color: rgba(83, 252, 24, 0.3) transparent;
 }
+
+/* Gold scrollbar */
+.premium-scroll-gold::-webkit-scrollbar { width: 4px; }
+.premium-scroll-gold::-webkit-scrollbar-track { background: transparent; }
+.premium-scroll-gold::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, rgba(234,179,8,0.4), rgba(234,179,8,0.15));
+  border-radius: 99px;
+}
+.premium-scroll-gold { scrollbar-width: thin; scrollbar-color: rgba(234,179,8,0.4) transparent; }
+
+/* Rose scrollbar */
+.premium-scroll-rose::-webkit-scrollbar { width: 4px; }
+.premium-scroll-rose::-webkit-scrollbar-track { background: transparent; }
+.premium-scroll-rose::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, rgba(225,29,72,0.4), rgba(225,29,72,0.15));
+  border-radius: 99px;
+}
+.premium-scroll-rose { scrollbar-width: thin; scrollbar-color: rgba(225,29,72,0.4) transparent; }
+
+/* Cyan scrollbar */
+.premium-scroll-cyan::-webkit-scrollbar { width: 4px; }
+.premium-scroll-cyan::-webkit-scrollbar-track { background: transparent; }
+.premium-scroll-cyan::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, rgba(6,182,212,0.4), rgba(6,182,212,0.15));
+  border-radius: 99px;
+}
+.premium-scroll-cyan { scrollbar-width: thin; scrollbar-color: rgba(6,182,212,0.4) transparent; }
