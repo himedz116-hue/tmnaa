@@ -47,21 +47,6 @@ function CrownIcon({ className }: { className?: string }) {
   );
 }
 
-function XpBar({ xp, maxXp = 10000 }: { xp: number; maxXp?: number }) {
-  const pct = Math.min((xp % maxXp) / maxXp, 1);
-  return (
-    <div className="relative w-full h-1.5 bg-white/[0.06] rounded-full overflow-hidden group/bar">
-      <motion.div
-        initial={{ width: 0 }}
-        whileInView={{ width: `${pct * 100}%` }}
-        viewport={{ once: true }}
-        transition={{ duration: 1, ease: easeOut }}
-        className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-[#53FC18] via-emerald-400 to-cyan-300 shadow-[0_0_12px_rgba(83,252,24,0.4)]"
-      />
-    </div>
-  );
-}
-
 export function BotrixLeaderboard() {
   const [data, setData] = useState<BotrixEntry[] | null>(null);
   const [avatars, setAvatars] = useState<Record<string, string>>({});
@@ -152,9 +137,6 @@ export function BotrixLeaderboard() {
     return (
       <div className="w-6 md:w-7 text-center shrink-0 relative">
         <span className="text-[11px] md:text-xs font-black text-white/[0.12] font-mono tracking-tight">{rank < 10 ? `0${rank}` : rank}</span>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-[11px] md:text-xs font-black text-white/[0.12] font-mono tracking-tight">{rank < 10 ? `0${rank}` : rank}</span>
-        </div>
       </div>
     );
   };
@@ -164,12 +146,10 @@ export function BotrixLeaderboard() {
       className="w-full">
       <div className="group relative flex flex-col rounded-[32px] md:rounded-[40px] overflow-hidden transition-all duration-700 bg-gradient-to-b from-[#070707] via-[#090807] to-[#070707] backdrop-blur-lg border border-white/[0.06] shadow-[0_0_80px_-20px_rgba(83,252,24,0.06)] hover:border-white/[0.12] hover:shadow-[0_0_100px_-15px_rgba(83,252,24,0.1)]">
 
-        {/* Premium Glow Backgrounds */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-[#53FC18] opacity-[0.04] blur-[150px] pointer-events-none rounded-full" />
         <div className="absolute top-20 right-0 w-[200px] h-[200px] bg-[#D4A84A] opacity-[0.03] blur-[120px] pointer-events-none rounded-full" />
         <div className="absolute bottom-0 left-0 w-[300px] h-[200px] bg-[#FF2D2D] opacity-[0.02] blur-[100px] pointer-events-none rounded-full" />
 
-        {/* Header */}
         <div className="relative p-6 md:p-10 z-10">
           <div className="flex items-center gap-5">
             <div className="relative">
@@ -187,7 +167,6 @@ export function BotrixLeaderboard() {
           </div>
         </div>
 
-        {/* List */}
         <div className="relative px-4 md:px-8 pb-4 z-10">
           {!data && <div className="space-y-2">{Array.from({ length: 8 }).map((_, i) => <SkeletonRow key={i} delay={i * 60} />)}</div>}
 
@@ -208,6 +187,8 @@ export function BotrixLeaderboard() {
                 const isTop3 = idx < 3;
                 const avatarUrl = getAvatar(entry.name);
                 const avatarLoading = isAvatarLoading(entry.name);
+                const hasLevel = entry.level > 0;
+                const hasXp = entry.xp > 0;
                 return (
                   <motion.div
                     key={entry.name}
@@ -221,12 +202,10 @@ export function BotrixLeaderboard() {
                         : 'hover:bg-white/[0.02] border border-transparent'
                     }`}
                   >
-                    {/* Rank */}
                     <div className="shrink-0 flex justify-center w-7 md:w-9">
                       {renderRank(idx + 1)}
                     </div>
 
-                    {/* Avatar with Premium Frame */}
                     <div className="shrink-0 relative">
                       <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full overflow-hidden ${
                         isTop3
@@ -248,9 +227,7 @@ export function BotrixLeaderboard() {
                       )}
                     </div>
 
-                    {/* User Info + Stats */}
-                    <div className="flex flex-col min-w-0 flex-1 gap-1.5">
-                      {/* Username + Level */}
+                    <div className="flex flex-col min-w-0 flex-1 gap-1">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className={`text-sm md:text-base font-black truncate leading-tight ${
                           idx === 0
@@ -261,56 +238,30 @@ export function BotrixLeaderboard() {
                         }`}>
                           {entry.name}
                         </span>
-                        <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-wider ${
-                          idx === 0
-                            ? 'bg-gradient-to-r from-[#53FC18]/20 to-emerald-500/20 text-[#53FC18] border border-[#53FC18]/30 shadow-[0_0_15px_rgba(83,252,24,0.15)]'
-                            : isTop3
-                              ? 'bg-white/[0.06] text-white/70 border border-white/[0.08]'
-                              : 'bg-white/[0.03] text-white/40 border border-white/[0.05]'
-                        }`}>
-                          <svg className={`w-2.5 h-2.5 md:w-3 md:h-3 ${idx === 0 ? 'text-[#53FC18]' : isTop3 ? 'text-white/50' : 'text-white/30'}`} viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                          </svg>
-                          Lv.{entry.level}
-                        </div>
-                      </div>
-
-                      {/* XP Bar */}
-                      <div className="flex items-center gap-2.5">
-                        <div className="flex-1 max-w-[140px] md:max-w-[200px]">
-                          <XpBar xp={entry.xp} />
-                        </div>
-                        <span className={`text-[9px] md:text-[10px] font-bold ${
-                          idx === 0 ? 'text-[#53FC18] drop-shadow-[0_0_8px_rgba(83,252,24,0.3)]' : 'text-white/35'
-                        }`}>
-                          {formatNum(entry.xp)} XP
-                        </span>
-                      </div>
-
-                      {/* Stats Row */}
-                      <div className="flex items-center gap-2 md:gap-3 flex-wrap">
-                        <div className={`flex items-center gap-1 text-[9px] md:text-[10px] font-bold ${
-                          idx === 0 ? 'text-[#53FC18]/80' : 'text-white/30'
-                        }`}>
-                          <svg className={`w-2.5 h-2.5 md:w-3 md:h-3 ${idx === 0 ? 'text-[#53FC18]' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <div className="flex items-center gap-1.5 text-[9px] md:text-[10px] font-bold text-white/25">
+                          <svg className="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <circle cx="12" cy="12" r="10" />
                             <path d="M12 6v6l4 2" />
                           </svg>
                           <span>{formatDuration(entry.watchtime)}</span>
                         </div>
-                        <span className="w-0.5 h-0.5 rounded-full bg-white/[0.08]" />
-                        <div className={`flex items-center gap-1 text-[9px] md:text-[10px] font-bold ${
-                          idx === 0 ? 'text-[#D4A84A]/80' : 'text-white/30'
-                        }`}>
-                          <svg className={`w-2.5 h-2.5 md:w-3 md:h-3 ${idx === 0 ? 'text-[#D4A84A]' : ''}`} viewBox="0 0 24 24" fill="currentColor">
+                      </div>
+
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <div className="flex items-center gap-1 text-[11px] md:text-xs font-black text-[#D4A84A]/70">
+                          <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
                           </svg>
                           <span>{formatNum(entry.points)} pts</span>
                         </div>
+                        {hasLevel && (
+                          <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-white/[0.04] text-white/40 border border-white/[0.06]">
+                            Lv.{entry.level}
+                          </span>
+                        )}
                       </div>
                     </div>
 
-                    {/* Watchtime Badge - Premium Pill */}
                     <div className={`shrink-0 flex flex-col items-center gap-1 rounded-xl px-3 md:px-4 py-2.5 md:py-3 border transition-all duration-300 ${
                       idx === 0
                         ? 'bg-gradient-to-b from-[#53FC18]/10 to-[#53FC18]/5 border-[#53FC18]/25 shadow-[0_0_25px_rgba(83,252,24,0.08)]'
@@ -344,10 +295,8 @@ export function BotrixLeaderboard() {
           )}
         </div>
 
-        {/* Bottom Fade */}
         <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#070707] via-[#070707]/90 to-transparent pointer-events-none z-20" />
 
-        {/* Powered By */}
         <div className="relative px-6 md:px-10 pb-6 md:pb-8 flex items-center justify-center gap-4 z-10">
           <div className="h-px flex-1 bg-gradient-to-r from-transparent via-white/[0.03] to-transparent" />
           <a href="https://botrix.live" target="_blank" rel="noopener noreferrer"
