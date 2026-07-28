@@ -68,6 +68,7 @@ interface CardConfig {
   gradient: string;
   subText: string;
   border: string;
+  line: string;
 }
 
 const configs: Record<string, CardConfig> = {
@@ -78,6 +79,7 @@ const configs: Record<string, CardConfig> = {
     gradient: 'from-yellow-400 to-amber-600',
     subText: 'text-yellow-200/50',
     border: 'border-yellow-500/20',
+    line: 'bg-yellow-500/60',
   },
   rose: {
     glow: 'shadow-[0_0_60px_-15px_rgba(225,29,72,0.2)]',
@@ -86,6 +88,7 @@ const configs: Record<string, CardConfig> = {
     gradient: 'from-rose-400 to-red-600',
     subText: 'text-rose-200/50',
     border: 'border-rose-500/20',
+    line: 'bg-rose-500/60',
   },
   cyan: {
     glow: 'shadow-[0_0_60px_-15px_rgba(6,182,212,0.2)]',
@@ -94,6 +97,7 @@ const configs: Record<string, CardConfig> = {
     gradient: 'from-cyan-400 to-blue-600',
     subText: 'text-cyan-200/50',
     border: 'border-cyan-500/20',
+    line: 'bg-cyan-500/60',
   },
 };
 
@@ -129,9 +133,10 @@ function LeaderboardCard({ title, subtitle, data, icon, accentColor, isMain, del
     <motion.div initial={{ y: 40, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.7, delay: delay * 0.001 }}
       className={`group relative flex flex-col rounded-[24px] md:rounded-[32px] overflow-hidden transition-all duration-700 bg-[#050505]/80 backdrop-blur-lg border ${config.border} ${config.glow} hover:border-white/20 ${isMain ? 'md:-mt-8 z-20 md:scale-105 shadow-2xl ring-1 ring-white/10' : 'shadow-xl'}`}>
       <div className={`absolute top-0 left-0 right-0 h-24 md:h-32 bg-gradient-to-b ${config.bgIcon.replace('bg-', 'from-').replace('/10', '/20')} to-transparent pointer-events-none opacity-40 blur-3xl`} />
+      <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-full h-px ${config.line} blur-sm`} />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-[150px] bg-white/5 blur-[100px] pointer-events-none rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
 
-      <div className="relative p-4 md:p-6 flex flex-col items-center justify-center text-center border-b border-white/5 z-10">
+      <div className={`relative p-4 md:p-6 flex flex-col items-center justify-center text-center border-b ${config.border} z-10`}>
         <div className={`w-10 h-10 md:w-14 md:h-14 mb-2 md:mb-3 rounded-2xl flex items-center justify-center bg-gradient-to-br from-white/10 to-transparent border border-white/10 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.5)] group-hover:scale-110 transition-transform duration-500`}>
           {icon}
         </div>
