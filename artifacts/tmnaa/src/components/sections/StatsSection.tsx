@@ -269,7 +269,10 @@ export function StatsSection() {
               <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight">Top Gifters</h2>
             </div>
             <p className="text-sm text-white/40 font-medium">Most generous supporters across all time</p>
-            <div className="h-px w-20 bg-gradient-to-r from-transparent via-[#D4A84A]/40 to-transparent" />
+            <div className="relative">
+              <div className="h-px w-24 bg-gradient-to-r from-transparent via-[#D4A84A]/60 to-transparent" />
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-1 rounded-full bg-gradient-to-r from-[#D4A84A]/80 via-[#D4A84A] to-[#D4A84A]/80 blur-[2px]" />
+            </div>
           </motion.div>
 
           {leaderboards ? (
