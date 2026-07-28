@@ -1,57 +1,34 @@
 import { Header } from '@/components/Header';
-import { Footer } from '@/components/Footer';
 import { HeroSection } from '@/components/sections/HeroSection';
-import { SocialSection } from '@/components/sections/SocialSection';
-import { LiveStatusSection } from '@/components/sections/LiveStatusSection';
+import { StreamAndChatSection } from '@/components/sections/StreamAndChatSection';
 import { SupportSection } from '@/components/sections/SupportSection';
-import { CommunitySection } from '@/components/sections/CommunitySection';
-import { AboutSection } from '@/components/sections/AboutSection';
-import { ScheduleSection } from '@/components/sections/ScheduleSection';
-import { GallerySection } from '@/components/sections/GallerySection';
-import { useEffect, useState } from 'react';
+import { LastSessionSection } from '@/components/sections/LastSessionSection';
+import { StatsSection } from '@/components/sections/StatsSection';
 
 export default function Home() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
-
   return (
-    <div className="min-h-screen bg-[#050505] text-white overflow-x-hidden">
-      {/* Mouse Follow Light Effect */}
-      <div
-        className="fixed pointer-events-none z-50 transition-opacity duration-300"
-        style={{
-          left: mousePosition.x,
-          top: mousePosition.y,
-          width: '600px',
-          height: '600px',
-          transform: 'translate(-50%, -50%)',
-          background: 'radial-gradient(circle, rgba(255, 217, 138, 0.08) 0%, transparent 70%)',
-          mixBlendMode: 'screen',
-        }}
-      />
-
+    <div className="min-h-screen bg-[#090807] text-white overflow-x-hidden">
       <Header />
 
       <main>
         <HeroSection />
-        <SocialSection />
-        <LiveStatusSection />
+        <StreamAndChatSection />
         <SupportSection />
-        <CommunitySection />
-        <AboutSection />
-        <ScheduleSection />
-        <GallerySection />
+        <LastSessionSection />
+        <StatsSection />
       </main>
 
-      <Footer />
+      {/* Footer */}
+      <footer className="py-12 px-6 border-t border-white/5">
+        <div className="max-w-5xl mx-auto flex flex-col items-center gap-4">
+          <p className="text-[11px] font-bold tracking-[0.2em] uppercase" style={{ color: 'rgba(247,243,238,0.25)' }}>
+            &copy; 2026 TMNAA. All Rights Reserved.
+          </p>
+          <p className="text-[10px] tracking-[0.15em]" style={{ color: 'rgba(247,243,238,0.15)' }}>
+            RISE WITH FIRE
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }

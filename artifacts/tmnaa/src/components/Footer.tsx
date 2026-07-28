@@ -1,5 +1,5 @@
 import { FaYoutube, FaTiktok, FaInstagram, FaXTwitter } from 'react-icons/fa6';
-import logoImg from '@assets/IMG_3093_1785158973333.WEBP';
+const logoImg = '/assets/IMG_3093_1785158973333.WEBP';
 
 export function Footer() {
   const quickLinks = [
