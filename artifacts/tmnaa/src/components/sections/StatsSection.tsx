@@ -285,7 +285,7 @@ export function StatsSection() {
           </motion.div>
 
           {leaderboards ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-8 items-start relative px-1">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-8 items-start relative px-1 pt-6 md:pt-8">
               <LeaderboardCard title="Weekly" subtitle="This Week" data={leaderboards.gifts_week} icon={<FlameIcon className="w-5 h-5 md:w-7 md:h-7" />} accentColor="rose" delay={100} emptyLabel="No active gifters this week" className="col-span-1 order-2 md:order-1" />
               <LeaderboardCard title="All Time" subtitle="Legends" data={leaderboards.gifts} icon={<DiamondIcon className="w-5 h-5 md:w-7 md:h-7" />} accentColor="yellow" isMain delay={0} emptyLabel="No records found" className="col-span-2 md:col-span-1 order-1 md:order-2" />
               <LeaderboardCard title="Monthly" subtitle="This Month" data={leaderboards.gifts_month} icon={<StarIcon className="w-5 h-5 md:w-7 md:h-7" />} accentColor="cyan" delay={200} emptyLabel="No active gifters this month" className="col-span-1 order-3" />
