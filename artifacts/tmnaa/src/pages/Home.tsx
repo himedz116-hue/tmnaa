@@ -24,15 +24,11 @@ export default function Home() {
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-gradient-to-b from-[#D4A84A]/5 via-transparent to-transparent blur-[120px]" />
         </div>
         <div className="max-w-5xl mx-auto flex flex-col items-center gap-6 relative z-10">
-          <p className="text-lg md:text-xl font-black tracking-[0.2em] uppercase" style={{
-            background: 'linear-gradient(135deg, #D4A84A, #FF7A18, #D4A84A)',
-            WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent',
-            filter: 'drop-shadow(0 0 20px rgba(212,168,74,0.3))',
-          }}>
+          <p className="text-lg md:text-xl font-black tracking-[0.25em] uppercase" style={{ color: 'rgba(247,243,238,0.25)' }}>
             POWERED BY HSG
           </p>
-          <div className="w-16 h-px bg-gradient-to-r from-transparent via-[#D4A84A]/40 to-transparent" />
-          <p className="text-sm md:text-base font-bold tracking-[0.3em] uppercase" style={{ color: 'rgba(247,243,238,0.35)' }}>
+          <div className="w-16 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+          <p className="text-[11px] font-bold tracking-[0.3em] uppercase" style={{ color: 'rgba(247,243,238,0.3)' }}>
             &copy; 2026 TMNAA All Rights Reserved.
           </p>
           <p className="text-[11px] tracking-[0.2em] font-medium" style={{ color: 'rgba(247,243,238,0.12)' }}>
