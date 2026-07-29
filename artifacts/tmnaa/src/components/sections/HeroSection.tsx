@@ -38,7 +38,7 @@ export function HeroSection() {
     <section
       id="home"
       ref={ref}
-      className="relative h-screen w-full overflow-hidden"
+      className="relative min-h-[100svh] w-full overflow-hidden"
       style={{ background: '#090807' }}
     >
       {/* ============ BACKGROUND LAYERS ============ */}
@@ -149,7 +149,7 @@ export function HeroSection() {
       {/* ============ CONTENT ============ */}
       <motion.div
         style={{ opacity: contentOpacity, y: contentY }}
-        className="relative z-20 h-full flex flex-col items-center justify-start md:justify-center pt-28 md:pt-0 px-6 pb-20 md:pb-0 overflow-y-auto scrollbar-hide"
+        className="relative z-20 h-full flex flex-col items-center justify-start md:justify-center pt-28 md:pt-0 px-6 pb-20 md:pb-0"
       >
         {/* Spacing push-down for navbar */}
         <div className="h-0 md:h-20 flex-shrink-0" />
