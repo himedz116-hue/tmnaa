@@ -1,12 +1,17 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import { motion } from 'framer-motion';
+import Hls from 'hls.js';
 
 interface ClipModalProps {
-  clip: { id: string; title: string; view_count: number } | null;
+  clip: { id: string; title: string; view_count: number; thumbnail_url?: string } | null;
   onClose: () => void;
 }
 
 export function ClipModal({ clip, onClose }: ClipModalProps) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [ready, setReady] = useState(false);
+  const [error, setError] = useState(false);
+
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -24,6 +29,33 @@ export function ClipModal({ clip, onClose }: ClipModalProps) {
       document.body.style.overflow = '';
     };
   }, [clip, handleKeyDown]);
+
+  useEffect(() => {
+    if (!clip || !videoRef.current) return;
+    setReady(false);
+    setError(false);
+
+    const videoUrl = clip.thumbnail_url?.replace(/thumbnail\.webp$/, 'playlist.m3u8');
+    if (!videoUrl) { setError(true); return; }
+
+    const video = videoRef.current;
+
+    if (Hls.isSupported()) {
+      const hls = new Hls({ enableWorker: false });
+      hls.loadSource(videoUrl);
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, () => { setReady(true); video.play().catch(() => {}); });
+      hls.on(Hls.Events.ERROR, () => { setError(true); });
+      return () => hls.destroy();
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = videoUrl;
+      video.addEventListener('loadedmetadata', () => { setReady(true); video.play().catch(() => {}); });
+      video.addEventListener('error', () => setError(true));
+      return () => { video.src = ''; };
+    } else {
+      setError(true);
+    }
+  }, [clip]);
 
   if (!clip) return null;
 
@@ -48,15 +80,30 @@ export function ClipModal({ clip, onClose }: ClipModalProps) {
       >
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#D4A84A]/40 to-transparent" />
 
-        <div className="relative aspect-video bg-black">
-          <iframe
-            src={`https://kick.com/embed/clip/${clip.id}?autoplay=1`}
-            className="w-full h-full"
-            allow="autoplay; fullscreen"
-            allowFullScreen
-            title={clip.title}
-          />
-          <div className="absolute inset-0 pointer-events-none ring-1 ring-white/5 rounded-inherit" />
+        <div className="relative aspect-video bg-black flex items-center justify-center">
+          {!ready && !error && (
+            <div className="absolute inset-0 flex items-center justify-center z-10">
+              <div className="w-10 h-10 border-2 border-white/20 border-t-white/60 rounded-full animate-spin" />
+            </div>
+          )}
+          {error ? (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-white/40">
+              <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" />
+              </svg>
+              <span className="text-sm font-medium">Could not load clip</span>
+              <button onClick={onClose} className="text-xs text-[#D4A84A] hover:underline">Close</button>
+            </div>
+          ) : (
+            <video
+              ref={videoRef}
+              className="w-full h-full object-contain"
+              controls
+              playsInline
+              autoPlay
+            />
+          )}
+          <div className="absolute inset-0 pointer-events-none ring-1 ring-white/5" />
         </div>
 
         <div className="flex items-center justify-between p-4 md:p-5 bg-gradient-to-b from-[#0d0d0d] to-[#080808]">
