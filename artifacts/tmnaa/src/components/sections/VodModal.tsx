@@ -44,29 +44,19 @@ export function VodModal({ video, onClose }: VodModalProps) {
       dbg.push(`vid=${vid}`);
 
       if (vid) {
-        const endpoints = [
-          `https://kick.com/api/v2/videos/${vid}`,
-          `https://kick.com/api/v2/video/${vid}`,
-          `https://kick.com/api/v1/video/${vid}`,
-        ];
-        for (const ep of endpoints) {
-          try {
-            const epShort = ep.replace('https://kick.com/api/', '');
-            dbg.push(`fetch ${epShort}`);
-            const res = await kickFetch(ep);
-            if (!res) { dbg.push('null'); continue; }
-            const keys = Object.keys(res).join(',');
-            const s3raw = res?.s3;
-            const s3str = typeof s3raw === 'string' ? s3raw : JSON.stringify(s3raw).slice(0, 80);
-            const vRaw = res?.v;
-            const vStr = typeof vRaw === 'string' ? vRaw : JSON.stringify(vRaw).slice(0, 80);
-            dbg.push(`keys=${keys.slice(0, 80)} | s3=${s3str} | v=${vStr}`);
-            const s3url = typeof s3raw === 'string' ? s3raw : s3raw?.url || '';
-            src = res?.data?.source || res?.source || res?.playback_url || s3url || vRaw?.source || vRaw?.url || '';
-            if (src) { dbg.push(`src=${src.slice(0, 60)}`); break; }
-            dbg.push('no-src-in-resp');
-          } catch (e: any) { dbg.push(`err=${String(e).slice(0, 40)}`); }
-        }
+        const ep = `https://kick.com/api/v1/video/${vid}`;
+        dbg.push(`fetch ${ep.replace('https://kick.com/api/', '')}`);
+        try {
+          const res = await kickFetch(ep);
+          if (res) {
+            const full = JSON.stringify(res).slice(0, 300);
+            dbg.push(`resp=${full}`);
+            src = res?.data?.source || res?.source || res?.playback_url || '';
+            if (src) dbg.push(`src=${src.slice(0, 60)}`);
+          } else {
+            dbg.push('null-resp');
+          }
+        } catch (e: any) { dbg.push(`err=${String(e).slice(0, 80)}`); }
       }
 
       if (!src) {
@@ -80,7 +70,7 @@ export function VodModal({ video, onClose }: VodModalProps) {
         return;
       }
 
-      dbg.push(`final-src=${src.slice(0, 60)}`);
+      dbg.push(`final-src=${src.slice(0, 80)}`);
       setDebugInfo(dbg.join(' | '));
 
       const v = videoRef.current;
@@ -111,13 +101,13 @@ export function VodModal({ video, onClose }: VodModalProps) {
 
       const timeout = setTimeout(() => {
         if (!loaded) setStatus('error');
-      }, 10000);
+      }, 8000);
       return () => { cleanup(); clearTimeout(timeout); };
     };
 
     const fallbackTimer = setTimeout(() => {
       setShowFallback(true);
-    }, 15000);
+    }, 8000);
 
     loadVideo();
     return () => { clearTimeout(timeout); clearTimeout(fallbackTimer); };
