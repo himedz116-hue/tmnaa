@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import Hls from 'hls.js';
 
 interface VodModalProps {
-  video: { source?: string; title?: string; session_title?: string; views?: number; view_count?: number } | null;
+  video: { source?: string; title?: string; session_title?: string; views?: number; view_count?: number; uuid?: string } | null;
   onClose: () => void;
 }
 
@@ -11,6 +11,8 @@ export function VodModal({ video, onClose }: VodModalProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [ready, setReady] = useState(false);
   const [error, setError] = useState(false);
+  const [fetching, setFetching] = useState(false);
+  const [src, setSrc] = useState<string | null>(null);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -31,28 +33,54 @@ export function VodModal({ video, onClose }: VodModalProps) {
   }, [video, handleKeyDown]);
 
   useEffect(() => {
-    if (!video || !videoRef.current || !video.source) { setError(true); return; }
+    if (!video) return;
     setReady(false);
     setError(false);
+    setSrc(null);
+
+    if (video.source) {
+      setSrc(video.source);
+      return;
+    }
+
+    const uid = video.uuid;
+    if (!uid) { setError(true); return; }
+
+    setFetching(true);
+    const proxyUrl = `/api/kick?endpoint=${encodeURIComponent(`https://kick.com/api/v1/video/${uid}`)}`;
+    fetch(proxyUrl, { headers: { Accept: 'application/json' } })
+      .then((r) => r.json())
+      .then((d) => {
+        const srcUrl = d?.source || d?.data?.source;
+        if (srcUrl) setSrc(srcUrl);
+        else setError(true);
+      })
+      .catch(() => setError(true))
+      .finally(() => setFetching(false));
+  }, [video]);
+
+  useEffect(() => {
+    if (!src || !videoRef.current) return;
+    setReady(false);
 
     const v = videoRef.current;
 
     if (Hls.isSupported()) {
       const hls = new Hls({ enableWorker: false });
-      hls.loadSource(video.source);
+      hls.loadSource(src);
       hls.attachMedia(v);
       hls.on(Hls.Events.MANIFEST_PARSED, () => { setReady(true); v.play().catch(() => {}); });
-      hls.on(Hls.Events.ERROR, () => setError(true));
+      hls.on(Hls.Events.ERROR, (_, data) => { if (data.fatal) setError(true); });
       return () => hls.destroy();
     } else if (v.canPlayType('application/vnd.apple.mpegurl')) {
-      v.src = video.source;
+      v.src = src;
       v.addEventListener('loadedmetadata', () => { setReady(true); v.play().catch(() => {}); });
       v.addEventListener('error', () => setError(true));
       return () => { v.src = ''; };
     } else {
       setError(true);
     }
-  }, [video]);
+  }, [src]);
 
   if (!video) return null;
 
@@ -80,7 +108,13 @@ export function VodModal({ video, onClose }: VodModalProps) {
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#D4A84A]/40 to-transparent" />
 
         <div className="relative aspect-video bg-black flex items-center justify-center">
-          {!ready && !error && (
+          {fetching && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 z-10">
+              <div className="w-10 h-10 border-2 border-white/20 border-t-white/60 rounded-full animate-spin" />
+              <span className="text-[11px] text-white/40 font-medium">Loading stream...</span>
+            </div>
+          )}
+          {!fetching && !ready && !error && (
             <div className="absolute inset-0 flex items-center justify-center z-10">
               <div className="w-10 h-10 border-2 border-white/20 border-t-white/60 rounded-full animate-spin" />
             </div>
