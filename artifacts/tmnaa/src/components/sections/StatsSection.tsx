@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { BotrixLeaderboard } from '@/components/sections/BotrixLeaderboardSection';
+import { ClipModal } from '@/components/sections/ClipModal';
 import { kickFetch } from '@/lib/kickApi';
 import type { ChannelInfo, LeaderboardData, LeaderboardEntry, Clip, Video } from '@/lib/types';
 
@@ -192,6 +193,7 @@ export function StatsSection() {
   const [leaderboards, setLeaderboards] = useState<LeaderboardData | null>(null);
   const [clips, setClips] = useState<Clip[] | null>(null);
   const [videos, setVideos] = useState<Video[] | null>(null);
+  const [selectedClip, setSelectedClip] = useState<Clip | null>(null);
 
   useEffect(() => {
     const fetchAll = () => {
@@ -316,8 +318,8 @@ export function StatsSection() {
             {clips ? clips.length > 0 ? (
               <div className="grid grid-cols-2 gap-4">
                 {clips.map((clip) => (
-                  <a key={clip.id} href={`https://kick.com/tmnaa?clip=${clip.id}`} target="_blank" rel="noreferrer"
-                    className="group relative aspect-video rounded-2xl overflow-hidden border border-white/10 bg-[#050505] shadow-lg hover:shadow-[#D4A84A]/10 hover:border-[#D4A84A]/30 transition-all duration-500">
+                  <button key={clip.id} onClick={() => setSelectedClip(clip)}
+                    className="group relative aspect-video rounded-2xl overflow-hidden border border-white/10 bg-[#050505] shadow-lg hover:shadow-[#D4A84A]/10 hover:border-[#D4A84A]/30 transition-all duration-500 text-left w-full cursor-pointer">
                     <img src={clip.thumbnail_url || FALLBACK_IMAGE} alt={clip.title} onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_IMAGE; }} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100" />
                     <div className="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100 duration-300">
                       <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -331,7 +333,7 @@ export function StatsSection() {
                         <span className="text-[10px] text-white/70">{formatNumber(clip.view_count)} views</span>
                       </div>
                     </div>
-                  </a>
+                  </button>
                 ))}
               </div>
             ) : <div className="p-8 rounded-2xl bg-white/5 border border-white/5 text-center text-white/30 text-sm italic">No clips</div> : (
@@ -381,6 +383,9 @@ export function StatsSection() {
           </div>
         </div>
       </div>
+      <AnimatePresence>
+        {selectedClip && <ClipModal clip={selectedClip} onClose={() => setSelectedClip(null)} />}
+      </AnimatePresence>
     </div>
   );
 }
