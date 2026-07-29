@@ -31,6 +31,7 @@ export default function Home() {
           <p className="text-[11px] font-bold tracking-[0.3em] uppercase" style={{ color: 'rgba(247,243,238,0.3)' }}>
             &copy; 2026 TMNAA All Rights Reserved
           </p>
+
           <p className="text-[11px] tracking-[0.2em] font-medium" style={{ color: 'rgba(247,243,238,0.12)' }}>
             RISE WITH FIRE
           </p>

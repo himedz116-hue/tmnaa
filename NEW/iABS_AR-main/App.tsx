@@ -12,7 +12,7 @@ import { DiscordWidget, YoutubeWidget } from './components/CommunityWidgets';
 import { AIChat } from './components/AIChat';
 
 // --- Constants ---
-const DEFAULT_PROFILE_IMAGE = "/favicon.png";
+const DEFAULT_PROFILE_IMAGE = "/56.png";
 import { kickFetch } from './utils/kickApi';
 import { getAllSocialMediaStats, formatFollowerCount } from './utils/socialMediaApi';
 

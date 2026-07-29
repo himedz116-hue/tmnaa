@@ -1,5 +1,4 @@
 import { FaYoutube, FaTiktok, FaInstagram, FaXTwitter } from 'react-icons/fa6';
-const logoImg = '/assets/IMG_3093_1785158973333.WEBP';
 
 export function Footer() {
   const quickLinks = [
@@ -20,10 +19,7 @@ export function Footer() {
   return (
     <footer className="bg-[#030303] border-t border-[rgba(207,163,71,0.2)] py-16">
       <div className="max-w-[1400px] mx-auto px-6">
-        {/* Logo */}
-        <div className="flex justify-center mb-12">
-          <img src={logoImg} alt="TMNAA" className="h-24 w-auto pulse-glow" />
-        </div>
+
 
         {/* Quick Links */}
         <div className="flex flex-wrap justify-center gap-8 mb-12">

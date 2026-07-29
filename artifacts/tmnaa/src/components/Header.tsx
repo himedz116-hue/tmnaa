@@ -73,19 +73,26 @@ export function Header() {
   }, []);
 
   // Fetch clips for search
+  const [clipsLoading, setClipsLoading] = useState(true);
   useEffect(() => {
-    kickFetch(`https://kick.com/api/v2/channels/tmnaa/clips`).then((raw) => {
-      if (!raw) return;
+    setClipsLoading(true);
+    kickFetch(`https://kick.com/api/v2/channels/tmnaa/clips?limit=20`).then((raw) => {
+      if (!raw) { setClipsLoading(false); return; }
       const data = raw?.data || raw;
       const arr = data?.clips || (Array.isArray(data) ? data : data?.data && Array.isArray(data.data) ? data.data : []);
       setAllClips(arr);
-    }).catch(() => {});
+      setClipsLoading(false);
+    }).catch(() => { setClipsLoading(false); });
   }, []);
 
   useEffect(() => {
     if (!searchQuery.trim()) { setSearchResults([]); return; }
     const q = searchQuery.toLowerCase();
-    setSearchResults(allClips.filter((c: any) => c.title?.toLowerCase().includes(q)).slice(0, 6));
+    setSearchResults(allClips.filter((c: any) =>
+      c.title?.toLowerCase().includes(q) ||
+      c.creator?.username?.toLowerCase().includes(q) ||
+      c.category?.name?.toLowerCase().includes(q)
+    ).slice(0, 8));
   }, [searchQuery, allClips]);
 
   // Close search on outside click
@@ -278,7 +285,7 @@ export function Header() {
 
               {/* Search Results Dropdown */}
               <AnimatePresence>
-                {searchOpen && searchResults.length > 0 && (
+                {searchOpen && searchQuery.trim() && (
                   <motion.div
                     initial={{ opacity: 0, y: -6, scale: 0.97 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -293,27 +300,61 @@ export function Header() {
                       boxShadow: '0 20px 60px rgba(0,0,0,0.7), 0 0 40px rgba(217,164,65,0.06)',
                     }}
                   >
-                    <div className="p-2 space-y-0.5">
-                      {searchResults.map((clip: any) => (
-                        <button
-                          key={clip.id}
-                          onClick={() => handleSearchResult(clip)}
-                          className="flex items-center gap-3 w-full p-2.5 rounded-xl hover:bg-white/5 transition-all text-left group"
-                        >
-                          <div className="w-14 aspect-video rounded-lg overflow-hidden shrink-0 bg-black/60">
-                            <img src={clip.thumbnail_url} alt={clip.title} className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity" loading="lazy" />
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="text-[13px] font-bold text-white/80 group-hover:text-white truncate transition-colors">{clip.title}</p>
-                            <span className="text-[10px] text-white/30">
-                              {new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 }).format(clip.view_count)} views
-                            </span>
-                          </div>
-                          <svg className="w-3.5 h-3.5 text-white/20 group-hover:text-[#D9A441] transition-colors shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M8 5v14l11-7z" />
+                    {/* Header */}
+                    <div className="px-4 pt-3 pb-2 border-b border-white/5">
+                      <p className="text-[11px] font-bold tracking-[0.15em] uppercase" style={{ color: 'rgba(217, 164, 65, 0.5)' }}>
+                        🔍 نتائج البحث — اللقطات
+                      </p>
+                    </div>
+
+                    <div className="p-2 space-y-0.5 max-h-[400px] overflow-y-auto">
+                      {clipsLoading ? (
+                        <div className="flex items-center justify-center py-8 gap-3">
+                          <div className="w-4 h-4 border-2 border-[#D9A441]/30 border-t-[#D9A441] rounded-full animate-spin" />
+                          <span className="text-[13px] text-white/40">جاري التحميل...</span>
+                        </div>
+                      ) : searchResults.length > 0 ? (
+                        searchResults.map((clip: any) => (
+                          <button
+                            key={clip.id}
+                            onClick={() => handleSearchResult(clip)}
+                            className="flex items-center gap-3 w-full p-2.5 rounded-xl hover:bg-white/5 transition-all text-left group"
+                          >
+                            <div className="w-16 aspect-video rounded-lg overflow-hidden shrink-0 bg-black/60 relative">
+                              <img src={clip.thumbnail_url} alt={clip.title} className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity" loading="lazy" />
+                              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div className="w-6 h-6 rounded-full bg-[#D9A441]/80 flex items-center justify-center">
+                                  <svg className="w-3 h-3 text-white ml-0.5" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-[13px] font-bold text-white/80 group-hover:text-white truncate transition-colors">{clip.title}</p>
+                              <div className="flex items-center gap-2 mt-0.5">
+                                <span className="text-[10px] text-white/30">
+                                  {new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 }).format(clip.view_count)} views
+                                </span>
+                                {clip.duration && (
+                                  <span className="text-[10px] text-white/20">
+                                    {Math.floor(clip.duration / 60)}:{String(clip.duration % 60).padStart(2, '0')}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            <svg className="w-3.5 h-3.5 text-white/20 group-hover:text-[#D9A441] transition-colors shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M8 5v14l11-7z" />
+                            </svg>
+                          </button>
+                        ))
+                      ) : (
+                        <div className="flex flex-col items-center justify-center py-8 gap-2">
+                          <svg className="w-8 h-8 text-white/10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                           </svg>
-                        </button>
-                      ))}
+                          <span className="text-[13px] text-white/30">ما لقيت نتائج لـ "{searchQuery}"</span>
+                          <span className="text-[11px] text-white/15">جرب كلمات ثانية</span>
+                        </div>
+                      )}
                     </div>
                   </motion.div>
                 )}

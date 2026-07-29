@@ -2,7 +2,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 import { EmberCanvas } from '@/components/EmberCanvas';
 const heroBgImg = '/bg-dragon.jpeg';
-const logoGlowImg = '/assets/b8349da6-46cd-4253-95b3-cface64f7020.png';
+const logoGlowImg = '/assets/tmnaa-logo.png';
 const tiktokImg = '/assets/Tiktok.webp';
 const youtubeImg = '/assets/youtube.webp';
 const xImg = '/assets/x.webp';
@@ -173,7 +173,7 @@ export function HeroSection() {
           <img
             src={logoGlowImg}
             alt="TMNAA"
-            className="relative w-[260px] md:w-[340px] lg:w-[420px] h-auto pulse-glow"
+            className="relative w-[160px] md:w-[220px] lg:w-[280px] h-auto pulse-glow"
             style={{
               filter: 'drop-shadow(0 0 35px rgba(255, 122, 24, 0.35)) drop-shadow(0 0 70px rgba(217, 164, 65, 0.15)) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.8))',
             }}
