@@ -1,7 +1,7 @@
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 import { EmberCanvas } from '@/components/EmberCanvas';
-const heroBgImg = '/assets/Dragon_in_dark_volcanic_landscape_202607280213.jpeg';
+const heroBgImg = '/bg-dragon.jpeg';
 const logoGlowImg = '/assets/b8349da6-46cd-4253-95b3-cface64f7020.png';
 const tiktokImg = '/assets/Tiktok.webp';
 const youtubeImg = '/assets/youtube.webp';
