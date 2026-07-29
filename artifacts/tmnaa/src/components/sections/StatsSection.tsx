@@ -195,7 +195,7 @@ export function StatsSection() {
   const [clips, setClips] = useState<Clip[] | null>(null);
   const [videos, setVideos] = useState<Video[] | null>(null);
   const [selectedClip, setSelectedClip] = useState<Clip | null>(null);
-  const [selectedVideo, setSelectedVideo] = useState<{ source?: string; id?: number; uuid?: string | null; thumbnail?: string; title?: string; session_title?: string; views?: number; view_count?: number } | null>(null);
+  const [selectedVideo, setSelectedVideo] = useState<{ source?: string; title?: string; session_title?: string; views?: number; view_count?: number } | null>(null);
 
   useEffect(() => {
     const fetchAll = () => {
@@ -354,7 +354,7 @@ export function StatsSection() {
               <div className="space-y-4">
                 {videos.map((video) => {
                   return (
-                    <button key={video.id} onClick={() => setSelectedVideo({ source: video.source, id: video.id, uuid: video.uuid || video.video?.uuid, thumbnail: video.thumbnail?.url || video.thumbnail?.src, title: video.title, session_title: video.session_title, views: video.views, view_count: video.view_count })}
+                    <button key={video.id} onClick={() => setSelectedVideo({ source: video.source, title: video.title, session_title: video.session_title, views: video.views, view_count: video.view_count })}
                       className="flex gap-4 p-3 rounded-2xl bg-[#080808] hover:bg-[#111] border border-white/5 hover:border-white/10 transition-all group cursor-pointer shadow-lg hover:shadow-xl text-left w-full">
                       <div className="relative w-36 aspect-video rounded-xl overflow-hidden shrink-0 bg-black shadow-inner">
                         <img src={video.thumbnail?.url || video.thumbnail?.src || (typeof video.thumbnail === 'string' ? video.thumbnail : '') || FALLBACK_IMAGE}
