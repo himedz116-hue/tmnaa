@@ -318,7 +318,7 @@ export function HeroSection() {
         >
           {/* Watch Live - Red Glowing Premium */}
           <motion.a
-            href="https://www.youtube.com/@tmnaa1"
+            href="https://kick.com/tmnaa"
             target="_blank"
             rel="noopener noreferrer"
             whileHover={{ scale: 1.04, y: -2 }}
@@ -350,7 +350,7 @@ export function HeroSection() {
 
           {/* Join Community - Premium Glass with Metallic Border */}
           <motion.a
-            href="https://www.tiktok.com/@tmnaa0"
+            href="https://discord.gg/tmfx"
             target="_blank"
             rel="noopener noreferrer"
             whileHover={{ scale: 1.04, y: -2 }}
