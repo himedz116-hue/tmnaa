@@ -12,6 +12,7 @@ export function VodModal({ video, onClose }: VodModalProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [showFallback, setShowFallback] = useState(false);
+  const [debugInfo, setDebugInfo] = useState('');
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -37,9 +38,11 @@ export function VodModal({ video, onClose }: VodModalProps) {
 
     const loadVideo = async () => {
       let src = video.source;
+      const dbg: string[] = [`id=${video.id}, uuid=${video.uuid}, source=${video.source?.slice(0, 50)}`];
 
       if (!src) {
         const vid = video.uuid || video.id;
+        dbg.push(`vid=${vid}`);
         if (vid) {
           const endpoints = [
             `https://kick.com/api/v2/video/${vid}`,
@@ -48,14 +51,18 @@ export function VodModal({ video, onClose }: VodModalProps) {
           ];
           for (const ep of endpoints) {
             try {
+              dbg.push(`fetch ${ep.split('/').pop()}`);
               const res = await kickFetch(ep);
+              const firstKey = res ? Object.keys(res)[0] : 'no-res';
+              dbg.push(`keys=${firstKey}, source=${res?.source?.slice(0, 30)}, data_source=${res?.data?.source?.slice(0, 30)}`);
               src = res?.data?.source || res?.source || res?.playback_url;
-              if (src) break;
-            } catch { /* try next */ }
+              if (src) { dbg.push('FOUND'); break; }
+            } catch { dbg.push('fail'); }
           }
         }
       }
 
+      setDebugInfo(dbg.join(' | '));
       if (!src || !videoRef.current) { setStatus('error'); return; }
 
       const v = videoRef.current;
@@ -135,6 +142,7 @@ export function VodModal({ video, onClose }: VodModalProps) {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" />
               </svg>
               <span className="text-sm font-medium">Could not load stream</span>
+              {debugInfo && <span className="text-[8px] text-white/20 max-w-[300px] text-center leading-tight">{debugInfo}</span>}
               <button onClick={onClose} className="text-xs text-white/30 hover:text-white/50 transition-colors">Close</button>
             </div>
           )}
