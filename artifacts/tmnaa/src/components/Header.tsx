@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaMagnifyingGlass, FaBell, FaBars, FaXmark } from 'react-icons/fa6';
 import { useNotifications } from '@/hooks/useNotifications';
-import { SearchOverlay } from '@/components/ui/SearchOverlay';
 import { NotificationPanel } from '@/components/ui/NotificationPanel';
+import { kickFetch } from '@/lib/kickApi';
+import type { Clip } from '@/lib/types';
 const logoImg = '/assets/IMG_3093_1785158973333.WEBP';
 
 const navLinks = [
@@ -20,6 +21,10 @@ export function Header() {
   const [streamTitle, setStreamTitle] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [allClips, setAllClips] = useState<any[]>([]);
+  const searchRef = useRef<HTMLDivElement>(null);
 
   const { notifications, unreadCount, markAllRead, markRead } = useNotifications();
 
@@ -38,6 +43,8 @@ export function Header() {
     const interval = setInterval(checkLive, 30000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => { setSearchOpen(false); setNotifOpen(false); }, [scrolled]);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -63,6 +70,38 @@ export function Header() {
     });
 
     return () => observer.disconnect();
+  }, []);
+
+  // Fetch clips for search
+  useEffect(() => {
+    kickFetch(`https://kick.com/api/v2/channels/tmnaa/clips`).then((raw) => {
+      if (!raw) return;
+      const data = raw?.data || raw;
+      const arr = data?.clips || (Array.isArray(data) ? data : data?.data && Array.isArray(data.data) ? data.data : []);
+      setAllClips(arr);
+    }).catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (!searchQuery.trim()) { setSearchResults([]); return; }
+    const q = searchQuery.toLowerCase();
+    setSearchResults(allClips.filter((c: any) => c.title?.toLowerCase().includes(q)).slice(0, 6));
+  }, [searchQuery, allClips]);
+
+  // Close search on outside click
+  useEffect(() => {
+    if (!searchOpen) return;
+    const handleClick = (e: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) setSearchOpen(false);
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [searchOpen]);
+
+  const handleSearchResult = useCallback((clip: any) => {
+    window.dispatchEvent(new CustomEvent('play-clip', { detail: clip }));
+    setSearchOpen(false);
+    setSearchQuery('');
   }, []);
 
   const NavLink = ({ href, label, layoutId }: { href: string; label: string; layoutId: string }) => {
@@ -209,16 +248,77 @@ export function Header() {
           {/* Search + Bell + Profile */}
           <div className="hidden lg:flex items-center gap-3 min-w-[220px] justify-end">
             {/* Search */}
-            <button
-              onClick={() => setSearchOpen(true)}
-              className="w-[42px] h-[42px] rounded-full flex items-center justify-center transition-all duration-300 hover:bg-[rgba(217,164,65,0.06)]"
-              style={{
-                border: '1px solid rgba(217, 164, 65, 0.1)',
-                boxShadow: 'inset 0 1px 2px rgba(0, 0, 0, 0.15)',
-              }}
-            >
-              <FaMagnifyingGlass size={15} className="text-[rgba(247,243,238,0.45)] hover:text-[#D9A441] transition-colors duration-300" />
-            </button>
+            <div className="relative" ref={searchRef}>
+              <div
+                className={`flex items-center gap-2.5 px-4 h-[42px] rounded-[25px] transition-all duration-400 ${searchOpen ? 'ring-1 ring-[#D9A441]/30' : ''}`}
+                style={{
+                  width: '180px',
+                  background: 'rgba(26, 18, 13, 0.6)',
+                  border: '1px solid rgba(217, 164, 65, 0.12)',
+                  boxShadow: 'inset 0 1px 3px rgba(0, 0, 0, 0.2), inset 0 -1px 0 rgba(217, 164, 65, 0.04)',
+                }}
+              >
+                <FaMagnifyingGlass size={12} className={`transition-colors flex-shrink-0 ${searchOpen ? 'text-[#D9A441]' : 'text-[#D9A441]/40'}`} />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => { setSearchOpen(true); setSearchQuery(e.target.value); }}
+                  onFocus={() => setSearchOpen(true)}
+                  placeholder="Search..."
+                  className="bg-transparent text-[#F7F3EE] text-[13px] outline-none w-full placeholder:text-[rgba(247,243,238,0.2)] font-medium"
+                />
+                {searchQuery && (
+                  <button onClick={() => { setSearchQuery(''); setSearchResults([]); }} className="text-white/20 hover:text-white/50 transition-colors">
+                    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+
+              {/* Search Results Dropdown */}
+              <AnimatePresence>
+                {searchOpen && searchResults.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -6, scale: 0.97 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -6, scale: 0.97 }}
+                    transition={{ type: 'spring', damping: 25, stiffness: 350 }}
+                    className="absolute top-full right-0 mt-2 w-[360px] rounded-2xl overflow-hidden z-50"
+                    style={{
+                      background: 'rgba(14, 10, 8, 0.97)',
+                      backdropFilter: 'blur(30px)',
+                      WebkitBackdropFilter: 'blur(30px)',
+                      border: '1.5px solid rgba(217, 164, 65, 0.15)',
+                      boxShadow: '0 20px 60px rgba(0,0,0,0.7), 0 0 40px rgba(217,164,65,0.06)',
+                    }}
+                  >
+                    <div className="p-2 space-y-0.5">
+                      {searchResults.map((clip: any) => (
+                        <button
+                          key={clip.id}
+                          onClick={() => handleSearchResult(clip)}
+                          className="flex items-center gap-3 w-full p-2.5 rounded-xl hover:bg-white/5 transition-all text-left group"
+                        >
+                          <div className="w-14 aspect-video rounded-lg overflow-hidden shrink-0 bg-black/60">
+                            <img src={clip.thumbnail_url} alt={clip.title} className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity" loading="lazy" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-[13px] font-bold text-white/80 group-hover:text-white truncate transition-colors">{clip.title}</p>
+                            <span className="text-[10px] text-white/30">
+                              {new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 }).format(clip.view_count)} views
+                            </span>
+                          </div>
+                          <svg className="w-3.5 h-3.5 text-white/20 group-hover:text-[#D9A441] transition-colors shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
 
             {/* Bell */}
             <div className="relative">
@@ -250,6 +350,7 @@ export function Header() {
                 unreadCount={unreadCount}
                 onMarkAllRead={markAllRead}
                 onMarkRead={markRead}
+                alignRight={false}
               />
             </div>
 
@@ -369,8 +470,6 @@ export function Header() {
         )}
       </AnimatePresence>
 
-      {/* Search Overlay */}
-      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
-    </>
+    </>  
   );
 }

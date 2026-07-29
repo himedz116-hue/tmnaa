@@ -9,6 +9,7 @@ interface NotificationPanelProps {
   unreadCount: number;
   onMarkAllRead: () => void;
   onMarkRead: (id: string) => void;
+  alignRight?: boolean;
 }
 
 function timeAgo(ts: number) {
@@ -20,7 +21,7 @@ function timeAgo(ts: number) {
 }
 
 export function NotificationPanel({
-  open, onClose, notifications, unreadCount, onMarkAllRead, onMarkRead,
+  open, onClose, notifications, unreadCount, onMarkAllRead, onMarkRead, alignRight = true,
 }: NotificationPanelProps) {
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -49,7 +50,7 @@ export function NotificationPanel({
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -10, scale: 0.97 }}
           transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-          className="absolute top-full right-0 mt-3 w-[360px] max-h-[480px] rounded-2xl overflow-hidden z-50"
+          className={`absolute top-full mt-3 w-[360px] max-h-[480px] rounded-2xl overflow-hidden z-50 ${alignRight ? 'right-0' : 'left-0'}`}
           style={{
             background: 'rgba(14, 10, 8, 0.97)',
             backdropFilter: 'blur(30px)',
