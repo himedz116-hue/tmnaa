@@ -262,14 +262,14 @@ export function HeroSection() {
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 1.5 + i * 0.1, type: 'spring', damping: 14 }}
-              className="premium-badge px-5 py-2.5 rounded-[20px] cursor-default"
+              className="premium-badge px-3 py-1.5 md:px-5 md:py-2.5 rounded-[12px] md:rounded-[20px] cursor-default"
               style={{
                 '--badge-gold': `${badge.color}40`,
                 '--badge-orange': `${badge.color}20`,
               } as React.CSSProperties}
             >
               <span
-                className="relative z-10 text-[13px] font-bold tracking-wider"
+                className="relative z-10 text-[10px] md:text-[13px] font-bold tracking-wider"
                 style={{ color: badge.color, fontFamily: 'Cairo, sans-serif' }}
               >
                 {badge.label}
