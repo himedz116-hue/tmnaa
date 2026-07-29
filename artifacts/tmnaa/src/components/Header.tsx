@@ -72,15 +72,44 @@ export function Header() {
     return () => observer.disconnect();
   }, []);
 
-  // Fetch clips for search
+  // Fetch clips and videos for search
   const [clipsLoading, setClipsLoading] = useState(true);
   useEffect(() => {
     setClipsLoading(true);
-    kickFetch(`https://kick.com/api/v2/channels/tmnaa/clips?limit=20`).then((raw) => {
-      if (!raw) { setClipsLoading(false); return; }
-      const data = raw?.data || raw;
-      const arr = data?.clips || (Array.isArray(data) ? data : data?.data && Array.isArray(data.data) ? data.data : []);
-      setAllClips(arr);
+    Promise.all([
+      kickFetch(`https://kick.com/api/v2/channels/tmnaa/clips?limit=20`),
+      kickFetch(`https://kick.com/api/v2/channels/tmnaa/videos`)
+    ]).then(([clipsRaw, videosRaw]) => {
+      // Parse clips
+      const clipsData = clipsRaw?.data || clipsRaw;
+      const clipsArr = clipsData?.clips || (Array.isArray(clipsData) ? clipsData : clipsData?.data && Array.isArray(clipsData.data) ? clipsData.data : []);
+      const mappedClips = clipsArr.map((c: any) => ({
+        id: c.id,
+        type: 'clip',
+        title: c.title,
+        thumbnail_url: c.thumbnail_url,
+        view_count: c.view_count || 0,
+        duration: c.duration,
+        creator: c.creator?.username || '',
+        category: c.category?.name || '',
+        url: `https://kick.com/tmnaa?clip=${c.id}`
+      }));
+
+      // Parse videos
+      const videosArr = videosRaw?.videos || (Array.isArray(videosRaw) ? videosRaw : []);
+      const mappedVideos = videosArr.map((v: any) => ({
+        id: v.id,
+        type: 'video',
+        title: v.session_title || v.title || 'Past Stream',
+        thumbnail_url: v.thumbnail?.url || v.thumbnail?.src || (typeof v.thumbnail === 'string' ? v.thumbnail : '') || `https://image.kick.com/image-v2/stream/${v.id}/desktop.webp`,
+        view_count: v.viewer_count || v.views || 0,
+        duration: v.duration,
+        creator: 'tmnaa',
+        category: v.categories?.[0]?.category?.name || v.categories?.[0]?.name || '',
+        url: `https://kick.com/video/${v.id}`
+      }));
+
+      setAllClips([...mappedClips, ...mappedVideos]);
       setClipsLoading(false);
     }).catch(() => { setClipsLoading(false); });
   }, []);
@@ -90,8 +119,8 @@ export function Header() {
     const q = searchQuery.toLowerCase();
     setSearchResults(allClips.filter((c: any) =>
       c.title?.toLowerCase().includes(q) ||
-      c.creator?.username?.toLowerCase().includes(q) ||
-      c.category?.name?.toLowerCase().includes(q)
+      c.creator?.toLowerCase().includes(q) ||
+      c.category?.toLowerCase().includes(q)
     ).slice(0, 8));
   }, [searchQuery, allClips]);
 
@@ -105,8 +134,8 @@ export function Header() {
     return () => document.removeEventListener('mousedown', handleClick);
   }, [searchOpen]);
 
-  const handleSearchResult = useCallback((clip: any) => {
-    window.open(`https://kick.com/tmnaa?clip=${clip.id}`, '_blank');
+  const handleSearchResult = useCallback((item: any) => {
+    window.open(item.url, '_blank');
     setSearchOpen(false);
     setSearchQuery('');
   }, []);
@@ -303,7 +332,7 @@ export function Header() {
                     {/* Header */}
                     <div className="px-4 pt-3 pb-2 border-b border-white/5">
                       <p className="text-[11px] font-bold tracking-[0.15em] uppercase" style={{ color: 'rgba(217, 164, 65, 0.5)' }}>
-                        🔍 نتائج البحث — اللقطات
+                        🔍 نتائج البحث — اللقطات والبثوث السابقة
                       </p>
                     </div>
 
@@ -329,14 +358,26 @@ export function Header() {
                               </div>
                             </div>
                             <div className="min-w-0 flex-1">
-                              <p className="text-[13px] font-bold text-white/80 group-hover:text-white truncate transition-colors">{clip.title}</p>
-                              <div className="flex items-center gap-2 mt-0.5">
+                              <div className="flex items-center gap-2 mb-0.5">
+                                <span className="text-[8px] font-bold px-1.5 py-0.5 rounded uppercase" 
+                                  style={{
+                                    background: clip.type === 'video' ? 'rgba(217, 164, 65, 0.2)' : 'rgba(255, 122, 24, 0.2)',
+                                    color: clip.type === 'video' ? '#D9A441' : '#FF7A18'
+                                  }}>
+                                  {clip.type === 'video' ? 'VOD' : 'CLIP'}
+                                </span>
+                                <p className="text-[13px] font-bold text-white/80 group-hover:text-white truncate transition-colors">{clip.title}</p>
+                              </div>
+                              <div className="flex items-center gap-2">
                                 <span className="text-[10px] text-white/30">
                                   {new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 }).format(clip.view_count)} views
                                 </span>
                                 {clip.duration && (
                                   <span className="text-[10px] text-white/20">
-                                    {Math.floor(clip.duration / 60)}:{String(clip.duration % 60).padStart(2, '0')}
+                                    {Math.floor(clip.duration / 3600) > 0 
+                                      ? `${Math.floor(clip.duration / 3600)}:${String(Math.floor((clip.duration % 3600) / 60)).padStart(2, '0')}:${String(clip.duration % 60).padStart(2, '0')}`
+                                      : `${Math.floor(clip.duration / 60)}:${String(clip.duration % 60).padStart(2, '0')}`
+                                    }
                                   </span>
                                 )}
                               </div>
