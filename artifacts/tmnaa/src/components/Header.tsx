@@ -4,6 +4,8 @@ import { FaMagnifyingGlass, FaBell, FaBars, FaXmark } from 'react-icons/fa6';
 import { useNotifications } from '@/hooks/useNotifications';
 import { NotificationPanel } from '@/components/ui/NotificationPanel';
 import { kickFetch } from '@/lib/kickApi';
+import { ClipModal } from '@/components/sections/ClipModal';
+import { VodModal } from '@/components/sections/VodModal';
 const logoImg = '/assets/IMG_3093_1785158973333.WEBP';
 
 const navLinks = [
@@ -24,6 +26,8 @@ export function Header() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [allClips, setAllClips] = useState<any[]>([]);
+  const [selectedClip, setSelectedClip] = useState<any>(null);
+  const [selectedVideo, setSelectedVideo] = useState<any>(null);
   const searchRef = useRef<HTMLDivElement>(null);
 
   const { notifications, unreadCount, markAllRead, markRead } = useNotifications();
@@ -106,7 +110,8 @@ export function Header() {
         duration: v.duration,
         creator: 'tmnaa',
         category: v.categories?.[0]?.category?.name || v.categories?.[0]?.name || '',
-        url: `https://kick.com/video/${v.id}`
+        url: `https://kick.com/video/${v.id}`,
+        uuid: v.video?.uuid || v.uuid
       }));
 
       setAllClips([...mappedClips, ...mappedVideos]);
@@ -135,7 +140,11 @@ export function Header() {
   }, [searchOpen]);
 
   const handleSearchResult = useCallback((item: any) => {
-    window.open(item.url, '_blank');
+    if (item.type === 'video') {
+      setSelectedVideo({ uuid: item.uuid, title: item.title, view_count: item.view_count });
+    } else {
+      setSelectedClip({ id: item.id, title: item.title, view_count: item.view_count, thumbnail_url: item.thumbnail_url });
+    }
     setSearchOpen(false);
     setSearchQuery('');
   }, []);
@@ -552,6 +561,10 @@ export function Header() {
         )}
       </AnimatePresence>
 
+      <AnimatePresence>
+        {selectedClip && <ClipModal clip={selectedClip} onClose={() => setSelectedClip(null)} />}
+        {selectedVideo && <VodModal video={selectedVideo} onClose={() => setSelectedVideo(null)} />}
+      </AnimatePresence>
     </>  
   );
 }
