@@ -29,7 +29,7 @@ export default function Home() {
           </p>
           <div className="w-16 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
           <p className="text-[11px] font-bold tracking-[0.3em] uppercase" style={{ color: 'rgba(247,243,238,0.3)' }}>
-            &copy; 2026 TMNAA All Rights Reserved.
+            &copy; 2026 TMNAA All Rights Reserved
           </p>
           <p className="text-[11px] tracking-[0.2em] font-medium" style={{ color: 'rgba(247,243,238,0.12)' }}>
             RISE WITH FIRE
