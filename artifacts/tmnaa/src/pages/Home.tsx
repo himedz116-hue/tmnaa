@@ -1,8 +1,9 @@
 import { Header } from '@/components/Header';
+import { HeroSection } from '@/components/sections/HeroSection';
 import { StreamAndChatSection } from '@/components/sections/StreamAndChatSection';
-import { StatsSection } from '@/components/sections/StatsSection';
-import { SocialCardsSection } from '@/components/sections/SocialCardsSection';
 import { SupportSection } from '@/components/sections/SupportSection';
+import { LastSessionSection } from '@/components/sections/LastSessionSection';
+import { StatsSection } from '@/components/sections/StatsSection';
 
 export default function Home() {
   return (
@@ -10,10 +11,11 @@ export default function Home() {
       <Header />
 
       <main>
+        <HeroSection />
         <StreamAndChatSection />
-        <StatsSection />
-        <SocialCardsSection />
         <SupportSection />
+        <LastSessionSection />
+        <StatsSection />
       </main>
 
       {/* Footer */}
