@@ -353,7 +353,7 @@ export function StatsSection() {
                 {videos.map((video) => {
                   const videoUUID = video.uuid || video.video?.uuid || video.id;
                   return (
-                    <a key={video.id} href={`https://kick.com/tmnaa/videos/${videoUUID}`} target="_blank" rel="noopener noreferrer"
+                    <a key={video.id} href={`https://kick.com/video/${videoUUID}`} target="_blank" rel="noopener noreferrer"
                       className="flex gap-4 p-3 rounded-2xl bg-[#080808] hover:bg-[#111] border border-white/5 hover:border-white/10 transition-all group cursor-pointer shadow-lg hover:shadow-xl">
                       <div className="relative w-36 aspect-video rounded-xl overflow-hidden shrink-0 bg-black shadow-inner">
                         <img src={video.thumbnail?.url || video.thumbnail?.src || (typeof video.thumbnail === 'string' ? video.thumbnail : '') || FALLBACK_IMAGE}
