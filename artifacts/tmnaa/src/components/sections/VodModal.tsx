@@ -41,10 +41,18 @@ export function VodModal({ video, onClose }: VodModalProps) {
       if (!src) {
         const vid = video.uuid || video.id;
         if (vid) {
-          try {
-            const res = await kickFetch(`https://kick.com/api/v1/video/${vid}`);
-            src = res?.data?.source || res?.source;
-          } catch { /* ignore */ }
+          const endpoints = [
+            `https://kick.com/api/v2/video/${vid}`,
+            `https://kick.com/api/v1/video/${vid}`,
+            `https://kick.com/api/v2/videos/${vid}`,
+          ];
+          for (const ep of endpoints) {
+            try {
+              const res = await kickFetch(ep);
+              src = res?.data?.source || res?.source || res?.playback_url;
+              if (src) break;
+            } catch { /* try next */ }
+          }
         }
       }
 
