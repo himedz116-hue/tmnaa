@@ -4,7 +4,7 @@ import Hls from 'hls.js';
 import { kickFetch } from '@/lib/kickApi';
 
 interface VodModalProps {
-  video: { uuid?: string | null; source?: string; thumbnail?: string; title?: string; session_title?: string; views?: number; view_count?: number } | null;
+  video: { id?: number; uuid?: string | null; source?: string; thumbnail?: string; title?: string; session_title?: string; views?: number; view_count?: number } | null;
   onClose: () => void;
 }
 
@@ -38,11 +38,14 @@ export function VodModal({ video, onClose }: VodModalProps) {
     const loadVideo = async () => {
       let src = video.source;
 
-      if (!src && video.uuid) {
-        try {
-          const res = await kickFetch(`https://kick.com/api/v1/video/${video.uuid}`);
-          src = res?.data?.source || res?.source;
-        } catch { /* ignore */ }
+      if (!src) {
+        const vid = video.uuid || video.id;
+        if (vid) {
+          try {
+            const res = await kickFetch(`https://kick.com/api/v1/video/${vid}`);
+            src = res?.data?.source || res?.source;
+          } catch { /* ignore */ }
+        }
       }
 
       if (!src || !videoRef.current) { setStatus('error'); return; }
@@ -158,7 +161,7 @@ export function VodModal({ video, onClose }: VodModalProps) {
         {showFallback && status !== 'ready' && (
           <div className="px-4 md:px-5 pb-4 md:pb-5 text-center">
             <div className="h-px bg-white/5 mb-3" />
-            <a href={`https://kick.com/video/${video.uuid}`} target="_blank" rel="noopener noreferrer"
+            <a href={`https://kick.com/video/${video.uuid || video.id}`} target="_blank" rel="noopener noreferrer"
               className="text-xs text-[#D4A84A] hover:underline">Watch on Kick ↗</a>
           </div>
         )}
