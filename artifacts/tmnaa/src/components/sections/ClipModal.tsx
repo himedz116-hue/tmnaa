@@ -11,6 +11,8 @@ export function ClipModal({ clip, onClose }: ClipModalProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [ready, setReady] = useState(false);
   const [error, setError] = useState(false);
+  const [fetching, setFetching] = useState(false);
+  const [src, setSrc] = useState<string | null>(null);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -31,31 +33,49 @@ export function ClipModal({ clip, onClose }: ClipModalProps) {
   }, [clip, handleKeyDown]);
 
   useEffect(() => {
-    if (!clip || !videoRef.current) return;
+    if (!clip) return;
     setReady(false);
     setError(false);
+    setSrc(null);
 
-    const videoUrl = clip.thumbnail_url?.replace(/thumbnail\.webp$/, 'playlist.m3u8');
-    if (!videoUrl) { setError(true); return; }
+    const fromThumb = clip.thumbnail_url?.replace(/thumbnail\.webp$/, 'playlist.m3u8');
+    if (fromThumb) { setSrc(fromThumb); return; }
 
-    const video = videoRef.current;
+    setFetching(true);
+    const proxyUrl = `/api/kick?endpoint=${encodeURIComponent(`https://kick.com/api/v2/clips/${clip.id}`)}`;
+    fetch(proxyUrl, { headers: { Accept: 'application/json' } })
+      .then((r) => r.json())
+      .then((d) => {
+        const srcUrl = d?.clip?.video_url || d?.video_url || d?.data?.clip?.video_url;
+        if (srcUrl) setSrc(srcUrl);
+        else setError(true);
+      })
+      .catch(() => setError(true))
+      .finally(() => setFetching(false));
+  }, [clip]);
+
+  useEffect(() => {
+    if (!src || !videoRef.current) return;
+    setReady(false);
+
+    const v = videoRef.current;
 
     if (Hls.isSupported()) {
       const hls = new Hls({ enableWorker: false });
-      hls.loadSource(videoUrl);
-      hls.attachMedia(video);
-      hls.on(Hls.Events.MANIFEST_PARSED, () => { setReady(true); video.play().catch(() => {}); });
-      hls.on(Hls.Events.ERROR, () => { setError(true); });
+      hls.loadSource(src);
+      hls.attachMedia(v);
+      hls.on(Hls.Events.MANIFEST_PARSED, () => { setReady(true); v.play().catch(() => {}); });
+      hls.on(Hls.Events.ERROR, (_, data) => { if (data.fatal) setError(true); });
       return () => hls.destroy();
-    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      video.src = videoUrl;
-      video.addEventListener('loadedmetadata', () => { setReady(true); video.play().catch(() => {}); });
-      video.addEventListener('error', () => setError(true));
-      return () => { video.src = ''; };
+    } else if (v.canPlayType('application/vnd.apple.mpegurl')) {
+      v.src = src;
+      v.addEventListener('loadedmetadata', () => { setReady(true); v.play().catch(() => {}); });
+      v.addEventListener('error', () => setError(true));
+      return () => { v.src = ''; };
     } else {
       setError(true);
     }
-  }, [clip]);
+  }, [src]);
 
   if (!clip) return null;
 
@@ -81,7 +101,13 @@ export function ClipModal({ clip, onClose }: ClipModalProps) {
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#D4A84A]/40 to-transparent" />
 
         <div className="relative aspect-video bg-black flex items-center justify-center">
-          {!ready && !error && (
+          {fetching && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 z-10">
+              <div className="w-10 h-10 border-2 border-white/20 border-t-white/60 rounded-full animate-spin" />
+              <span className="text-[11px] text-white/40 font-medium">Loading clip...</span>
+            </div>
+          )}
+          {!fetching && !ready && !error && (
             <div className="absolute inset-0 flex items-center justify-center z-10">
               <div className="w-10 h-10 border-2 border-white/20 border-t-white/60 rounded-full animate-spin" />
             </div>
