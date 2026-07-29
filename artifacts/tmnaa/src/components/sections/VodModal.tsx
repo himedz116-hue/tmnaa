@@ -37,31 +37,30 @@ export function VodModal({ video, onClose }: VodModalProps) {
     setStatus('loading');
 
     const loadVideo = async () => {
-      let src = video.source;
-      const dbg: string[] = [`id=${video.id}, uuid=${video.uuid}, source=${video.source?.slice(0, 50)}`];
+      let src = '';
+      const dbg: string[] = [`id=${video.id}, uuid=${video.uuid}, listSource=${video.source?.slice(0, 50)}`];
 
-      if (!src) {
-        const vid = video.uuid || video.id;
-        dbg.push(`vid=${vid}`);
-        if (vid) {
-          const endpoints = [
-            `https://kick.com/api/v2/video/${vid}`,
-            `https://kick.com/api/v1/video/${vid}`,
-            `https://kick.com/api/v2/videos/${vid}`,
-          ];
-          for (const ep of endpoints) {
-            try {
-              dbg.push(`fetch ${ep.split('/').pop()}`);
-              const res = await kickFetch(ep);
-              const firstKey = res ? Object.keys(res)[0] : 'no-res';
-              dbg.push(`keys=${firstKey}, source=${res?.source?.slice(0, 30)}, data_source=${res?.data?.source?.slice(0, 30)}`);
-              src = res?.data?.source || res?.source || res?.playback_url;
-              if (src) { dbg.push('FOUND'); break; }
-            } catch { dbg.push('fail'); }
-          }
+      const vid = video.uuid || video.id;
+      dbg.push(`vid=${vid}`);
+
+      if (vid) {
+        const endpoints = [
+          `https://kick.com/api/v2/video/${vid}`,
+          `https://kick.com/api/v1/video/${vid}`,
+        ];
+        for (const ep of endpoints) {
+          try {
+            dbg.push(`fetch ${ep.split('/').pop()}`);
+            const res = await kickFetch(ep);
+            const keys = res ? Object.keys(res).join(',') : 'no-res';
+            dbg.push(`keys=${keys.slice(0, 80)}`);
+            src = res?.data?.source || res?.source || res?.playback_url || '';
+            if (src) { dbg.push(`src=${src.slice(0, 50)}`); break; }
+          } catch { dbg.push('fail'); }
         }
       }
 
+      if (!src) src = video.source || '';
       setDebugInfo(dbg.join(' | '));
       if (!src || !videoRef.current) { setStatus('error'); return; }
 
