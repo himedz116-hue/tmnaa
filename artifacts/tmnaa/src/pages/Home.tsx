@@ -7,7 +7,15 @@ import { StatsSection } from '@/components/sections/StatsSection';
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[#090807] text-white overflow-x-hidden">
+    <div className="min-h-screen bg-[#090807] text-white overflow-x-hidden relative">
+      <div className="fixed inset-0 pointer-events-none z-0"
+        style={{
+          backgroundImage: 'url(/bg-dragon.jpeg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          opacity: 0.08,
+        }}
+      />
       <Header />
 
       <main>
