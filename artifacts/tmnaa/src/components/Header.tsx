@@ -189,7 +189,7 @@ export function Header() {
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 1, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-        className="fixed top-0 left-0 right-0 z-[100] px-[2.5%] pt-3"
+        className="fixed top-0 left-0 right-0 z-[100] px-[2.5%] pt-1"
       >
         <nav
           className={`glass-nav ${scrolled ? 'scrolled' : ''} rounded-[40px] mx-auto h-[72px] flex items-center justify-between px-[30px] relative`}
