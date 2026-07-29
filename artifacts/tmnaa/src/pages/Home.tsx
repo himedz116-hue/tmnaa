@@ -19,15 +19,15 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="py-16 px-6 border-t border-white/5 relative overflow-hidden">
+      <footer className="pt-20 pb-16 px-6 border-t border-white/5 relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-gradient-to-b from-[#D4A84A]/5 via-transparent to-transparent blur-[120px]" />
         </div>
         <div className="max-w-5xl mx-auto flex flex-col items-center gap-6 relative z-10">
-          <p className="text-sm font-black tracking-[0.25em] uppercase" style={{ color: 'rgba(247,243,238,0.25)' }}>
+          <p className="text-sm font-black tracking-[0.25em] uppercase mb-2" style={{ color: 'rgba(247,243,238,0.5)' }}>
             POWERED BY HSG
           </p>
-          <div className="w-16 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+          <div className="w-16 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
           <p className="text-[11px] font-bold tracking-[0.3em] uppercase" style={{ color: 'rgba(247,243,238,0.3)' }}>
             &copy; 2026 TMNAA All Rights Reserved.
           </p>
