@@ -4,13 +4,14 @@ import Hls from 'hls.js';
 import { kickFetch } from '@/lib/kickApi';
 
 interface VodModalProps {
-  video: { uuid?: string | null; source?: string; title?: string; session_title?: string; views?: number; view_count?: number } | null;
+  video: { uuid?: string | null; source?: string; thumbnail?: string; title?: string; session_title?: string; views?: number; view_count?: number } | null;
   onClose: () => void;
 }
 
 export function VodModal({ video, onClose }: VodModalProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [showFallback, setShowFallback] = useState(false);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -41,10 +42,7 @@ export function VodModal({ video, onClose }: VodModalProps) {
         try {
           const res = await kickFetch(`https://kick.com/api/v1/video/${video.uuid}`);
           src = res?.data?.source || res?.source;
-        } catch {
-          setStatus('error');
-          return;
-        }
+        } catch { /* ignore */ }
       }
 
       if (!src || !videoRef.current) { setStatus('error'); return; }
@@ -56,19 +54,24 @@ export function VodModal({ video, onClose }: VodModalProps) {
         hls.loadSource(src);
         hls.attachMedia(v);
         hls.on(Hls.Events.MANIFEST_PARSED, () => { setStatus('ready'); v.play().catch(() => {}); });
-        hls.on(Hls.Events.ERROR, (_event, data) => {
-          if (data.fatal) setStatus('error');
-        });
+        hls.on(Hls.Events.ERROR, () => setStatus('error'));
+        return () => { hls.destroy(); setStatus('loading'); };
       } else if (v.canPlayType('application/vnd.apple.mpegurl')) {
         v.src = src;
         v.addEventListener('loadedmetadata', () => { setStatus('ready'); v.play().catch(() => {}); });
         v.addEventListener('error', () => setStatus('error'));
+        return () => { v.src = ''; };
       } else {
         setStatus('error');
       }
     };
 
+    const timer = setTimeout(() => {
+      if (status === 'loading') setShowFallback(true);
+    }, 15000);
+
     loadVideo();
+    return () => clearTimeout(timer);
   }, [video]);
 
   if (!video) return null;
@@ -80,27 +83,30 @@ export function VodModal({ video, onClose }: VodModalProps) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: 0.15 }}
       className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8"
       onClick={onClose}
     >
       <div className="absolute inset-0 bg-black/80 backdrop-blur-xl" />
 
       <motion.div
-        initial={{ scale: 0.9, opacity: 0, y: 40 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.9, opacity: 0, y: 40 }}
-        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.95, opacity: 0 }}
+        transition={{ duration: 0.15 }}
         onClick={(e) => e.stopPropagation()}
         className="relative w-full max-w-4xl bg-[#0a0a0a] rounded-[32px] overflow-hidden border border-white/10 shadow-2xl shadow-black/60"
       >
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#D4A84A]/40 to-transparent" />
 
         <div className="relative aspect-video bg-black flex items-center justify-center">
+          {/* thumbnail placeholder */}
+          {status === 'loading' && video.thumbnail && (
+            <img src={video.thumbnail} alt="" className="absolute inset-0 w-full h-full object-cover opacity-30" />
+          )}
           {status === 'loading' && (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 z-10">
               <div className="w-10 h-10 border-2 border-white/20 border-t-white/60 rounded-full animate-spin" />
-              <span className="text-sm text-white/40 font-medium">Loading stream...</span>
             </div>
           )}
           {status === 'ready' && (
@@ -118,13 +124,7 @@ export function VodModal({ video, onClose }: VodModalProps) {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" />
               </svg>
               <span className="text-sm font-medium">Could not load stream</span>
-              <div className="flex gap-3 mt-1">
-                <button onClick={onClose} className="text-xs text-white/30 hover:text-white/50 transition-colors">Close</button>
-                {video.uuid && (
-                  <a href={`https://kick.com/video/${video.uuid}`} target="_blank" rel="noopener noreferrer"
-                    className="text-xs text-[#D4A84A] hover:underline">Watch on Kick</a>
-                )}
-              </div>
+              <button onClick={onClose} className="text-xs text-white/30 hover:text-white/50 transition-colors">Close</button>
             </div>
           )}
           <div className="absolute inset-0 pointer-events-none ring-1 ring-white/5" />
@@ -133,7 +133,7 @@ export function VodModal({ video, onClose }: VodModalProps) {
         <div className="flex items-center justify-between p-4 md:p-5 bg-gradient-to-b from-[#0d0d0d] to-[#080808]">
           <div className="min-w-0 flex-1 mr-4">
             <h3 className="text-sm md:text-lg font-bold text-white truncate drop-shadow-sm">{title}</h3>
-            {video.views || video.view_count ? (
+            {(video.views || video.view_count) && (
               <div className="flex items-center gap-2 mt-1">
                 <svg className="w-3.5 h-3.5 text-white/40 shrink-0" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
@@ -142,7 +142,7 @@ export function VodModal({ video, onClose }: VodModalProps) {
                   {new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 }).format(video.views || video.view_count || 0)} views
                 </span>
               </div>
-            ) : null}
+            )}
           </div>
 
           <button
@@ -154,6 +154,14 @@ export function VodModal({ video, onClose }: VodModalProps) {
             </svg>
           </button>
         </div>
+
+        {showFallback && status !== 'ready' && (
+          <div className="px-4 md:px-5 pb-4 md:pb-5 text-center">
+            <div className="h-px bg-white/5 mb-3" />
+            <a href={`https://kick.com/video/${video.uuid}`} target="_blank" rel="noopener noreferrer"
+              className="text-xs text-[#D4A84A] hover:underline">Watch on Kick ↗</a>
+          </div>
+        )}
       </motion.div>
     </motion.div>
   );
