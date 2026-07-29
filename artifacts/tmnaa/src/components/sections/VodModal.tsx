@@ -56,11 +56,13 @@ export function VodModal({ video, onClose }: VodModalProps) {
             const res = await kickFetch(ep);
             if (!res) { dbg.push('null'); continue; }
             const keys = Object.keys(res).join(',');
-            const s3 = res?.s3 || '';
+            const s3raw = res?.s3;
+            const s3str = typeof s3raw === 'string' ? s3raw : JSON.stringify(s3raw).slice(0, 80);
             const vRaw = res?.v;
-            const vStr = typeof vRaw === 'string' ? vRaw : (vRaw?.source || vRaw?.url || JSON.stringify(vRaw).slice(0, 60));
-            dbg.push(`keys=${keys.slice(0, 120)} | s3=${String(s3).slice(0, 60)} | v=${vStr.slice(0, 60)}`);
-            src = res?.data?.source || res?.source || res?.playback_url || s3 || vRaw?.source || vRaw?.url || '';
+            const vStr = typeof vRaw === 'string' ? vRaw : JSON.stringify(vRaw).slice(0, 80);
+            dbg.push(`keys=${keys.slice(0, 80)} | s3=${s3str} | v=${vStr}`);
+            const s3url = typeof s3raw === 'string' ? s3raw : s3raw?.url || '';
+            src = res?.data?.source || res?.source || res?.playback_url || s3url || vRaw?.source || vRaw?.url || '';
             if (src) { dbg.push(`src=${src.slice(0, 60)}`); break; }
             dbg.push('no-src-in-resp');
           } catch (e: any) { dbg.push(`err=${String(e).slice(0, 40)}`); }
