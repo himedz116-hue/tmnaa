@@ -149,17 +149,17 @@ export function HeroSection() {
       {/* ============ CONTENT ============ */}
       <motion.div
         style={{ opacity: contentOpacity, y: contentY }}
-        className="relative z-20 h-full flex flex-col items-center justify-center px-6"
+        className="relative z-20 h-full flex flex-col items-center justify-center md:justify-center pt-16 md:pt-0 px-6"
       >
         {/* Spacing push-down for navbar */}
-        <div className="h-16 md:h-20 flex-shrink-0" />
+        <div className="h-4 md:h-20 flex-shrink-0" />
 
         {/* Logo + TMNAA combined image */}
         <motion.div
           initial={{ scale: 0.6, opacity: 0, filter: 'blur(10px)' }}
           animate={{ scale: 1, opacity: 1, filter: 'blur(0px)' }}
           transition={{ duration: 1.4, delay: 0.3, ease: easeOut }}
-          className="mb-6 md:mb-8 relative"
+          className="mb-3 md:mb-8 relative"
         >
           {/* Outer bloom glow */}
           <div
@@ -212,7 +212,7 @@ export function HeroSection() {
           initial={{ scaleX: 0, opacity: 0 }}
           animate={{ scaleX: 1, opacity: 1 }}
           transition={{ duration: 1.2, delay: 1.1, ease: easeOut }}
-          className="w-[240px] h-[1.5px] mb-8"
+          className="w-[200px] md:w-[240px] h-[1.5px] mb-4 md:mb-8"
           style={{
             background: 'linear-gradient(90deg, transparent, rgba(217, 164, 65, 0.6), rgba(255, 122, 24, 0.4), rgba(217, 164, 65, 0.6), transparent)',
           }}
@@ -238,7 +238,7 @@ export function HeroSection() {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.9, delay: 1.3, ease: easeOut }}
-          className="text-base md:text-lg mb-12"
+          className="text-sm md:text-lg mb-6 md:mb-12 text-center"
           style={{
             fontFamily: 'Tajawal, sans-serif',
             color: 'rgba(247, 243, 238, 0.45)',
@@ -254,7 +254,7 @@ export function HeroSection() {
           initial={{ y: 25, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.9, delay: 1.4, ease: easeOut }}
-          className="flex flex-wrap justify-center gap-4 mb-14"
+          className="flex flex-wrap justify-center gap-3 md:gap-4 mb-8 md:mb-14"
         >
           {badges.map((badge, i) => (
             <motion.div
@@ -278,12 +278,12 @@ export function HeroSection() {
           ))}
         </motion.div>
 
-        {/* Social Buttons - Full Image Buttons */}
+        {/* Social Buttons - Grid on Mobile, Flex on Desktop */}
         <motion.div
           initial={{ y: 35, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.9, delay: 1.6, ease: easeOut }}
-          className="flex flex-wrap justify-center items-center gap-6 sm:gap-8 mb-12"
+          className="grid grid-cols-2 md:flex md:flex-wrap justify-center items-center gap-4 md:gap-8 mb-8 md:mb-12 w-full max-w-sm md:max-w-none mx-auto"
         >
           {socialCards.map((card, i) => (
             <motion.a
@@ -302,8 +302,8 @@ export function HeroSection() {
               <img
                 src={card.img}
                 alt={card.name}
-                className="h-[70px] sm:h-[90px] w-auto"
-                style={{ display: 'block' }}
+                className="h-auto w-full md:h-[90px] md:w-auto mx-auto object-contain"
+                style={{ display: 'block', maxHeight: '70px' }}
               />
             </motion.a>
           ))}
