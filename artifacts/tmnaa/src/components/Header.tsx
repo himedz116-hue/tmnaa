@@ -4,7 +4,6 @@ import { FaMagnifyingGlass, FaBell, FaBars, FaXmark } from 'react-icons/fa6';
 import { useNotifications } from '@/hooks/useNotifications';
 import { NotificationPanel } from '@/components/ui/NotificationPanel';
 import { kickFetch } from '@/lib/kickApi';
-import type { Clip } from '@/lib/types';
 const logoImg = '/assets/IMG_3093_1785158973333.WEBP';
 
 const navLinks = [
@@ -99,7 +98,7 @@ export function Header() {
   }, [searchOpen]);
 
   const handleSearchResult = useCallback((clip: any) => {
-    window.dispatchEvent(new CustomEvent('play-clip', { detail: clip }));
+    window.open(`https://kick.com/tmnaa?clip=${clip.id}`, '_blank');
     setSearchOpen(false);
     setSearchQuery('');
   }, []);
