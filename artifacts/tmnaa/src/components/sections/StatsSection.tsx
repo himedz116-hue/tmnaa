@@ -309,7 +309,7 @@ export function StatsSection() {
         </div>
 
         {/* Clips & VODs */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 pt-8 border-t border-white/5">
+        <div id="clips" className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 pt-8 border-t border-white/5">
           <div className="space-y-6">
             <div className="flex items-center gap-4 mb-4">
               <div className="w-10 h-10 rounded-xl bg-[#111] border border-white/10 flex items-center justify-center text-[#D4A84A] shadow-lg">
