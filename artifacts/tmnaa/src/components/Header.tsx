@@ -13,6 +13,24 @@ export function Header() {
   const [activeSection, setActiveSection] = useState('home');
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isLive, setIsLive] = useState<boolean | null>(null);
+  const [streamTitle, setStreamTitle] = useState('');
+
+  useEffect(() => {
+    const checkLive = async () => {
+      try {
+        const res = await fetch('/api/kick?endpoint=' + encodeURIComponent('https://kick.com/api/v2/channels/tmnaa'));
+        if (!res.ok) return;
+        const data = await res.json();
+        const live = data?.livestream !== null && data?.livestream !== undefined;
+        setIsLive(live);
+        setStreamTitle(live ? (data?.livestream?.session_title || 'Live') : '');
+      } catch { setIsLive(false); }
+    };
+    checkLive();
+    const interval = setInterval(checkLive, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -85,37 +103,50 @@ export function Header() {
         <nav
           className={`glass-nav ${scrolled ? 'scrolled' : ''} rounded-[40px] mx-auto h-[72px] flex items-center justify-between px-[30px] relative`}
         >
-          {/* Section 1: LIVE NOW */}
+          {/* Section 1: LIVE NOW / OFFLINE */}
           <div className="hidden lg:flex items-center gap-3.5 min-w-[220px]">
             <div className="relative flex-shrink-0">
-              <div
-                className="w-3 h-3 rounded-full"
-                style={{
-                  background: 'radial-gradient(circle, #FF7A18, #D94A2B)',
-                  boxShadow: '0 0 8px rgba(255, 122, 24, 0.8), 0 0 20px rgba(255, 122, 24, 0.4)',
-                  animation: 'live-pulse 2s ease-in-out infinite',
-                }}
-              />
+              {isLive === null ? (
+                <div className="w-3 h-3 rounded-full bg-white/10 animate-pulse" />
+              ) : isLive ? (
+                <div className="w-3 h-3 rounded-full"
+                  style={{
+                    background: 'radial-gradient(circle, #53FC18, #1EAE0A)',
+                    boxShadow: '0 0 8px rgba(83,252,24,0.8), 0 0 20px rgba(83,252,24,0.4)',
+                    animation: 'live-pulse 2s ease-in-out infinite',
+                  }}
+                />
+              ) : (
+                <div className="w-3 h-3 rounded-full bg-white/15" />
+              )}
             </div>
             <div className="flex flex-col">
-              <span
-                className="font-bold text-[13px] tracking-[0.12em] leading-tight"
-                style={{
-                  fontFamily: 'Cairo, sans-serif',
-                  background: 'linear-gradient(135deg, #FF7A18, #FF9A44)',
-                  WebkitBackgroundClip: 'text',
-                  backgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                }}
-              >
-                LIVE NOW
-              </span>
-              <span
-                className="text-[11px] leading-tight truncate max-w-[160px]"
-                style={{ color: 'rgba(247, 243, 238, 0.4)' }}
-              >
-                Streaming Warzone...
-              </span>
+              {isLive === null ? (
+                <>
+                  <span className="font-bold text-[13px] tracking-[0.12em] leading-tight text-white/30"
+                    style={{ fontFamily: 'Cairo, sans-serif' }}>---</span>
+                  <span className="text-[11px] leading-tight text-white/15">Checking...</span>
+                </>
+              ) : isLive ? (
+                <>
+                  <span className="font-bold text-[13px] tracking-[0.12em] leading-tight"
+                    style={{
+                      fontFamily: 'Cairo, sans-serif',
+                      background: 'linear-gradient(135deg, #53FC18, #26D60A)',
+                      WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent',
+                    }}
+                  >LIVE NOW</span>
+                  <span className="text-[11px] leading-tight truncate max-w-[160px] text-white/40">
+                    {streamTitle || 'Live'}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span className="font-bold text-[13px] tracking-[0.12em] leading-tight text-white/25"
+                    style={{ fontFamily: 'Cairo, sans-serif' }}>OFFLINE</span>
+                  <span className="text-[11px] leading-tight text-white/15">Stream offline</span>
+                </>
+              )}
             </div>
           </div>
 
@@ -235,8 +266,8 @@ export function Header() {
                 >
                   TMNAA
                 </span>
-                <span className="text-[10px] font-bold leading-tight" style={{ color: '#4ADE80' }}>
-                  ● Online
+                <span className="text-[10px] font-bold leading-tight" style={{ color: isLive ? '#53FC18' : 'rgba(247,243,238,0.3)' }}>
+                  {isLive ? '● Live' : '● Offline'}
                 </span>
               </div>
             </div>
@@ -279,14 +310,20 @@ export function Header() {
               <div className="p-5 flex flex-col gap-1">
                 {/* Live Status */}
                 <div className="flex items-center gap-3 px-4 py-3 mb-2">
-                  <div className="w-2.5 h-2.5 rounded-full animate-pulse"
-                    style={{ background: 'radial-gradient(circle, #FF7A18, #D94A2B)', boxShadow: '0 0 8px rgba(255, 122, 24, 0.8)' }}
-                  />
+                  {isLive ? (
+                    <div className="w-2.5 h-2.5 rounded-full animate-pulse"
+                      style={{ background: 'radial-gradient(circle, #53FC18, #1EAE0A)', boxShadow: '0 0 8px rgba(83,252,24,0.8)' }}
+                    />
+                  ) : (
+                    <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
+                  )}
                   <div className="flex flex-col">
                     <span className="font-bold text-xs tracking-[0.12em]"
-                      style={{ fontFamily: 'Cairo, sans-serif', color: '#FF7A18' }}
-                    >LIVE NOW</span>
-                    <span className="text-[10px]" style={{ color: 'rgba(247, 243, 238, 0.35)' }}>Streaming Warzone...</span>
+                      style={{ fontFamily: 'Cairo, sans-serif', color: isLive ? '#53FC18' : 'rgba(247,243,238,0.3)' }}
+                    >{isLive ? 'LIVE NOW' : 'OFFLINE'}</span>
+                    <span className="text-[10px]" style={{ color: 'rgba(247, 243, 238, 0.35)' }}>
+                      {isLive ? (streamTitle || 'Live') : 'Stream offline'}
+                    </span>
                   </div>
                 </div>
                 <div className="h-px mx-3" style={{ background: 'linear-gradient(90deg, transparent, rgba(217, 164, 65, 0.1), transparent)' }} />
@@ -325,7 +362,7 @@ export function Header() {
                   </div>
                   <div className="flex flex-col">
                     <span className="text-sm font-bold" style={{ fontFamily: 'Cairo, sans-serif', color: '#F7F3EE' }}>TMNAA</span>
-                    <span className="text-[10px] font-bold" style={{ color: '#4ADE80' }}>● Online</span>
+                    <span className="text-[10px] font-bold" style={{ color: isLive ? '#53FC18' : 'rgba(247,243,238,0.3)' }}>{isLive ? '● Live' : '● Offline'}</span>
                   </div>
                 </div>
               </div>
