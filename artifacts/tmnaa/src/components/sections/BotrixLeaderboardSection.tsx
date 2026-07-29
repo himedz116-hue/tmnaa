@@ -20,10 +20,12 @@ const formatNum = (n: number) => {
 };
 
 const formatDuration = (seconds: number) => {
-  const days = Math.floor(seconds / 86400);
-  const hrs = Math.floor((seconds % 86400) / 3600);
-  if (days > 0) return `${days}d ${hrs}h`;
-  return `${hrs}h`;
+  const d = Math.floor(seconds / 86400);
+  const h = Math.floor((seconds % 86400) / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  if (d > 0) return `${d}d ${h}h ${m}m`;
+  if (h > 0) return `${h}h ${m}m`;
+  return `${m}m`;
 };
 
 const SkeletonRow = ({ delay }: { delay: number }) => (
