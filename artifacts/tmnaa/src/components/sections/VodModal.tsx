@@ -53,9 +53,13 @@ export function VodModal({ video, onClose }: VodModalProps) {
             dbg.push(`fetch ${ep.split('/').pop()}`);
             const res = await kickFetch(ep);
             const keys = res ? Object.keys(res).join(',') : 'no-res';
-            dbg.push(`keys=${keys.slice(0, 80)}`);
-            src = res?.data?.source || res?.source || res?.playback_url || '';
-            if (src) { dbg.push(`src=${src.slice(0, 50)}`); break; }
+            const s3 = res?.s3 || '';
+            const vRaw = res?.v;
+            const vStr = typeof vRaw === 'string' ? vRaw : (vRaw?.source || vRaw?.url || JSON.stringify(vRaw).slice(0, 60));
+            const thumb = res?.thumb?.url || res?.thumb || '';
+            dbg.push(`keys=${keys.slice(0, 120)} | s3=${String(s3).slice(0, 60)} | v=${vStr.slice(0, 60)} | thumb=${String(thumb).slice(0, 60)}`);
+            src = res?.data?.source || res?.source || res?.playback_url || s3 || vRaw?.source || vRaw?.url || '';
+            if (src) { dbg.push(`src=${src.slice(0, 60)}`); break; }
           } catch { dbg.push('fail'); }
         }
       }
