@@ -45,28 +45,37 @@ export function VodModal({ video, onClose }: VodModalProps) {
 
       if (vid) {
         const endpoints = [
+          `https://kick.com/api/v2/videos/${vid}`,
           `https://kick.com/api/v2/video/${vid}`,
           `https://kick.com/api/v1/video/${vid}`,
         ];
         for (const ep of endpoints) {
           try {
-            dbg.push(`fetch ${ep.split('/').pop()}`);
+            dbg.push(`fetch ${ep.split('/').slice(3).join('/')}`);
             const res = await kickFetch(ep);
-            const keys = res ? Object.keys(res).join(',') : 'no-res';
+            if (!res) { dbg.push('null'); continue; }
+            const keys = Object.keys(res).join(',');
             const s3 = res?.s3 || '';
             const vRaw = res?.v;
             const vStr = typeof vRaw === 'string' ? vRaw : (vRaw?.source || vRaw?.url || JSON.stringify(vRaw).slice(0, 60));
-            const thumb = res?.thumb?.url || res?.thumb || '';
-            dbg.push(`keys=${keys.slice(0, 120)} | s3=${String(s3).slice(0, 60)} | v=${vStr.slice(0, 60)} | thumb=${String(thumb).slice(0, 60)}`);
+            dbg.push(`keys=${keys.slice(0, 120)} | s3=${String(s3).slice(0, 60)} | v=${vStr.slice(0, 60)}`);
             src = res?.data?.source || res?.source || res?.playback_url || s3 || vRaw?.source || vRaw?.url || '';
             if (src) { dbg.push(`src=${src.slice(0, 60)}`); break; }
-          } catch { dbg.push('fail'); }
+            dbg.push('no-src-in-resp');
+          } catch (e: any) { dbg.push(`err=${String(e).slice(0, 40)}`); }
         }
       }
 
       if (!src) src = video.source || '';
+      if (!src) {
+        dbg.push('no-src-fallback');
+        setStatus('error');
+        setDebugInfo(dbg.join(' | '));
+        return;
+      }
+
+      dbg.push(`final-src=${src.slice(0, 60)}`);
       setDebugInfo(dbg.join(' | '));
-      if (!src || !videoRef.current) { setStatus('error'); return; }
 
       const v = videoRef.current;
 
