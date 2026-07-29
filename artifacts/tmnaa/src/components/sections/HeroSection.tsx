@@ -149,10 +149,10 @@ export function HeroSection() {
       {/* ============ CONTENT ============ */}
       <motion.div
         style={{ opacity: contentOpacity, y: contentY }}
-        className="relative z-20 h-full flex flex-col items-center justify-center md:justify-center pt-16 md:pt-0 px-6"
+        className="relative z-20 h-full flex flex-col items-center justify-start md:justify-center pt-28 md:pt-0 px-6 pb-20 md:pb-0 overflow-y-auto scrollbar-hide"
       >
         {/* Spacing push-down for navbar */}
-        <div className="h-4 md:h-20 flex-shrink-0" />
+        <div className="h-0 md:h-20 flex-shrink-0" />
 
         {/* Logo + TMNAA combined image */}
         <motion.div
