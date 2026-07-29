@@ -228,7 +228,7 @@ export function StatsSection() {
   }, []);
 
   return (
-    <div className="py-20 md:py-28 px-6 space-y-16 relative">
+    <div id="stats" className="py-20 md:py-28 px-6 space-y-16 relative">
       <div className="max-w-6xl mx-auto space-y-16">
         {/* Followers + Sub Badges */}
         {channelInfo ? (
@@ -272,7 +272,7 @@ export function StatsSection() {
         ) : <Skeleton className="h-32 w-full rounded-[30px]" />}
 
         {/* Top Gifters */}
-        <div className="relative space-y-12">
+        <div id="gifters" className="relative space-y-12">
           <motion.div initial={{ y: 20, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.7, ease: easeOut }}
             className="flex flex-col items-center justify-center gap-2 text-center relative z-10">
             <div className="flex items-center gap-3">
