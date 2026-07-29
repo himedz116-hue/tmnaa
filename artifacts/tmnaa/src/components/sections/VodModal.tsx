@@ -1,16 +1,16 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { motion } from 'framer-motion';
 import Hls from 'hls.js';
+import { kickFetch } from '@/lib/kickApi';
 
 interface VodModalProps {
-  video: { source?: string; title?: string; session_title?: string; views?: number; view_count?: number } | null;
+  video: { uuid?: string | null; source?: string; title?: string; session_title?: string; views?: number; view_count?: number } | null;
   onClose: () => void;
 }
 
 export function VodModal({ video, onClose }: VodModalProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [ready, setReady] = useState(false);
-  const [error, setError] = useState(false);
+  const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -31,27 +31,44 @@ export function VodModal({ video, onClose }: VodModalProps) {
   }, [video, handleKeyDown]);
 
   useEffect(() => {
-    if (!video || !videoRef.current || !video.source) { setError(true); return; }
-    setReady(false);
-    setError(false);
+    if (!video) return;
+    setStatus('loading');
 
-    const v = videoRef.current;
+    const loadVideo = async () => {
+      let src = video.source;
 
-    if (Hls.isSupported()) {
-      const hls = new Hls({ enableWorker: false });
-      hls.loadSource(video.source);
-      hls.attachMedia(v);
-      hls.on(Hls.Events.MANIFEST_PARSED, () => { setReady(true); v.play().catch(() => {}); });
-      hls.on(Hls.Events.ERROR, () => setError(true));
-      return () => hls.destroy();
-    } else if (v.canPlayType('application/vnd.apple.mpegurl')) {
-      v.src = video.source;
-      v.addEventListener('loadedmetadata', () => { setReady(true); v.play().catch(() => {}); });
-      v.addEventListener('error', () => setError(true));
-      return () => { v.src = ''; };
-    } else {
-      setError(true);
-    }
+      if (!src && video.uuid) {
+        try {
+          const res = await kickFetch(`https://kick.com/api/v1/video/${video.uuid}`);
+          src = res?.data?.source || res?.source;
+        } catch {
+          setStatus('error');
+          return;
+        }
+      }
+
+      if (!src || !videoRef.current) { setStatus('error'); return; }
+
+      const v = videoRef.current;
+
+      if (Hls.isSupported()) {
+        const hls = new Hls({ enableWorker: false });
+        hls.loadSource(src);
+        hls.attachMedia(v);
+        hls.on(Hls.Events.MANIFEST_PARSED, () => { setStatus('ready'); v.play().catch(() => {}); });
+        hls.on(Hls.Events.ERROR, (_event, data) => {
+          if (data.fatal) setStatus('error');
+        });
+      } else if (v.canPlayType('application/vnd.apple.mpegurl')) {
+        v.src = src;
+        v.addEventListener('loadedmetadata', () => { setStatus('ready'); v.play().catch(() => {}); });
+        v.addEventListener('error', () => setStatus('error'));
+      } else {
+        setStatus('error');
+      }
+    };
+
+    loadVideo();
   }, [video]);
 
   if (!video) return null;
@@ -80,20 +97,13 @@ export function VodModal({ video, onClose }: VodModalProps) {
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#D4A84A]/40 to-transparent" />
 
         <div className="relative aspect-video bg-black flex items-center justify-center">
-          {!ready && !error && (
-            <div className="absolute inset-0 flex items-center justify-center z-10">
+          {status === 'loading' && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 z-10">
               <div className="w-10 h-10 border-2 border-white/20 border-t-white/60 rounded-full animate-spin" />
+              <span className="text-sm text-white/40 font-medium">Loading stream...</span>
             </div>
           )}
-          {error ? (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-white/40">
-              <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" />
-              </svg>
-              <span className="text-sm font-medium">Could not load stream</span>
-              <button onClick={onClose} className="text-xs text-[#D4A84A] hover:underline">Close</button>
-            </div>
-          ) : (
+          {status === 'ready' && (
             <video
               ref={videoRef}
               className="w-full h-full object-contain"
@@ -101,6 +111,21 @@ export function VodModal({ video, onClose }: VodModalProps) {
               playsInline
               autoPlay
             />
+          )}
+          {status === 'error' && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-white/40">
+              <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" />
+              </svg>
+              <span className="text-sm font-medium">Could not load stream</span>
+              <div className="flex gap-3 mt-1">
+                <button onClick={onClose} className="text-xs text-white/30 hover:text-white/50 transition-colors">Close</button>
+                {video.uuid && (
+                  <a href={`https://kick.com/video/${video.uuid}`} target="_blank" rel="noopener noreferrer"
+                    className="text-xs text-[#D4A84A] hover:underline">Watch on Kick</a>
+                )}
+              </div>
+            </div>
           )}
           <div className="absolute inset-0 pointer-events-none ring-1 ring-white/5" />
         </div>
