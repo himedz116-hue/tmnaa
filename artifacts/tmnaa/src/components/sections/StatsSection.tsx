@@ -244,7 +244,10 @@ export function StatsSection() {
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-4xl md:text-5xl font-black text-white tracking-tighter">{formatNumber(channelInfo.followers_count)}</h3>
+                  <h3 className="text-4xl md:text-5xl font-black text-white tracking-tighter flex items-center gap-3">
+                    {formatNumber(channelInfo.followers_count)}
+                    <img src="/assets/kick-logo.png" alt="Kick" className="w-8 h-8 md:w-10 md:h-10 object-contain drop-shadow-[0_0_12px_rgba(83,252,24,0.3)]" />
+                  </h3>
                   <p className="text-xs uppercase tracking-[0.2em] font-bold mt-1 pl-1" style={{ color: 'rgba(247,243,238,0.4)' }}>FOLLOWERS</p>
                 </div>
               </div>
