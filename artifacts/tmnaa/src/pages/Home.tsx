@@ -24,7 +24,7 @@ export default function Home() {
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-gradient-to-b from-[#D4A84A]/5 via-transparent to-transparent blur-[120px]" />
         </div>
         <div className="max-w-5xl mx-auto flex flex-col items-center gap-6 relative z-10">
-          <p className="text-lg md:text-xl font-black tracking-[0.25em] uppercase" style={{ color: 'rgba(247,243,238,0.25)' }}>
+          <p className="text-sm font-black tracking-[0.25em] uppercase" style={{ color: 'rgba(247,243,238,0.25)' }}>
             POWERED BY HSG
           </p>
           <div className="w-16 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
