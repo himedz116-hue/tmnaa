@@ -20,9 +20,7 @@ const formatNum = (n: number) => {
 };
 
 const formatDuration = (seconds: number) => {
-  const h = seconds / 3600;
-  if (h >= 24) return `${(h / 24).toFixed(1)}d`;
-  return `${h.toFixed(1)}h`;
+  return `${Math.round(seconds / 3600)}h`;
 };
 
 const SkeletonRow = ({ delay }: { delay: number }) => (
