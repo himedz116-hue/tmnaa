@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaMagnifyingGlass, FaBell, FaBars, FaXmark } from 'react-icons/fa6';
+import { useNotifications } from '@/hooks/useNotifications';
+import { SearchOverlay } from '@/components/ui/SearchOverlay';
+import { NotificationPanel } from '@/components/ui/NotificationPanel';
 const logoImg = '/assets/IMG_3093_1785158973333.WEBP';
 
 const navLinks = [
@@ -15,6 +18,10 @@ export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [isLive, setIsLive] = useState<boolean | null>(null);
   const [streamTitle, setStreamTitle] = useState('');
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
+
+  const { notifications, unreadCount, markAllRead, markRead } = useNotifications();
 
   useEffect(() => {
     const checkLive = async () => {
@@ -157,10 +164,9 @@ export function Header() {
             ))}
           </div>
 
-          {/* Section 2: Logo Circle (Center) */}
+          {/* Logo Circle (Center) */}
           <div className="absolute left-1/2 -translate-x-1/2 lg:-bottom-[18px] z-[110]">
             <motion.div whileHover={{ scale: 1.06 }} className="relative">
-              {/* Outer glow ring */}
               <div
                 className="absolute -inset-3 rounded-full pointer-events-none"
                 style={{
@@ -187,9 +193,7 @@ export function Header() {
                   src={logoImg}
                   alt="TMNAA"
                   className="w-[72px] h-[72px] object-cover rounded-full"
-                  style={{
-                    filter: 'drop-shadow(0 0 10px rgba(255, 122, 24, 0.3))',
-                  }}
+                  style={{ filter: 'drop-shadow(0 0 10px rgba(255, 122, 24, 0.3))' }}
                 />
               </div>
             </motion.div>
@@ -202,68 +206,63 @@ export function Header() {
             ))}
           </div>
 
-          {/* Section 4: Search + Bell + Profile */}
+          {/* Search + Bell + Profile */}
           <div className="hidden lg:flex items-center gap-3 min-w-[220px] justify-end">
-            {/* Search Box */}
-            <div
-              className="flex items-center gap-2.5 px-4 h-[42px] rounded-[25px] transition-all duration-400 group/search cursor-text"
+            {/* Search */}
+            <button
+              onClick={() => setSearchOpen(true)}
+              className="w-[42px] h-[42px] rounded-full flex items-center justify-center transition-all duration-300 hover:bg-[rgba(217,164,65,0.06)]"
               style={{
-                width: '180px',
-                background: 'rgba(26, 18, 13, 0.6)',
-                border: '1px solid rgba(217, 164, 65, 0.12)',
-                boxShadow: 'inset 0 1px 3px rgba(0, 0, 0, 0.2), inset 0 -1px 0 rgba(217, 164, 65, 0.04)',
+                border: '1px solid rgba(217, 164, 65, 0.1)',
+                boxShadow: 'inset 0 1px 2px rgba(0, 0, 0, 0.15)',
               }}
             >
-              <FaMagnifyingGlass size={12} className="text-[#D9A441]/40 group-focus-within/search:text-[#D9A441]/80 transition-colors flex-shrink-0" />
-              <span className="text-[rgba(247,243,238,0.25)] text-[13px] group-focus-within/search:hidden">Search...</span>
-              <input
-                type="text"
-                className="bg-transparent text-[#F7F3EE] text-[13px] outline-none w-full hidden group-focus-within/search:block placeholder:text-[rgba(247,243,238,0.2)]"
-                placeholder="Search..."
-              />
-            </div>
+              <FaMagnifyingGlass size={15} className="text-[rgba(247,243,238,0.45)] hover:text-[#D9A441] transition-colors duration-300" />
+            </button>
 
-            {/* Bell Icon */}
-            <div className="relative cursor-pointer group/bell">
-              <div
-                className="w-[42px] h-[42px] rounded-full flex items-center justify-center transition-all duration-300 group-hover/bell:bg-[rgba(217,164,65,0.06)]"
+            {/* Bell */}
+            <div className="relative">
+              <button
+                onClick={() => setNotifOpen((p) => !p)}
+                className="w-[42px] h-[42px] rounded-full flex items-center justify-center transition-all duration-300 hover:bg-[rgba(217,164,65,0.06)]"
                 style={{
                   border: '1px solid rgba(217, 164, 65, 0.1)',
                   boxShadow: 'inset 0 1px 2px rgba(0, 0, 0, 0.15)',
                 }}
               >
-                <FaBell size={15} className="text-[rgba(247,243,238,0.45)] group-hover/bell:text-[#D9A441] transition-colors duration-300" />
-              </div>
-              <div
-                className="absolute -top-0.5 -right-0.5 w-[18px] h-[18px] rounded-full flex items-center justify-center"
-                style={{
-                  background: 'linear-gradient(135deg, #D94A2B, #FF4A1C)',
-                  boxShadow: '0 0 8px rgba(217, 74, 43, 0.6)',
-                }}
-              >
-                <span className="text-[8px] text-white font-bold">3</span>
-              </div>
+                <FaBell size={15} className="text-[rgba(247,243,238,0.45)] hover:text-[#D9A441] transition-colors duration-300" />
+              </button>
+              {unreadCount > 0 && (
+                <div
+                  className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] rounded-full flex items-center justify-center px-1"
+                  style={{
+                    background: 'linear-gradient(135deg, #D94A2B, #FF4A1C)',
+                    boxShadow: '0 0 8px rgba(217, 74, 43, 0.6)',
+                  }}
+                >
+                  <span className="text-[8px] text-white font-bold">{unreadCount > 9 ? '9+' : unreadCount}</span>
+                </div>
+              )}
+              <NotificationPanel
+                open={notifOpen}
+                onClose={() => setNotifOpen(false)}
+                notifications={notifications}
+                unreadCount={unreadCount}
+                onMarkAllRead={markAllRead}
+                onMarkRead={markRead}
+              />
             </div>
 
             {/* Profile */}
             <div className="flex items-center gap-2.5 cursor-pointer group/profile">
               <div
                 className="w-[42px] h-[42px] rounded-full overflow-hidden flex-shrink-0 transition-all duration-400 group-hover/profile:shadow-[0_0_20px_rgba(255,122,24,0.25)]"
-                style={{
-                  border: '1.5px solid rgba(217, 164, 65, 0.35)',
-                }}
+                style={{ border: '1.5px solid rgba(217, 164, 65, 0.35)' }}
               >
-                <img
-                  src={logoImg}
-                  alt="TMNAA"
-                  className="w-full h-full object-cover"
-                />
+                <img src={logoImg} alt="TMNAA" className="w-full h-full object-cover" />
               </div>
               <div className="flex flex-col">
-                <span
-                  className="text-[13px] font-bold leading-tight"
-                  style={{ fontFamily: 'Cairo, sans-serif', color: '#F7F3EE' }}
-                >
+                <span className="text-[13px] font-bold leading-tight" style={{ fontFamily: 'Cairo, sans-serif', color: '#F7F3EE' }}>
                   TMNAA
                 </span>
                 <span className="text-[10px] font-bold leading-tight" style={{ color: isLive ? '#53FC18' : 'rgba(247,243,238,0.3)' }}>
@@ -354,8 +353,7 @@ export function Header() {
 
                 {/* Profile in mobile */}
                 <div className="flex items-center gap-3 px-4 py-3 mt-2">
-                  <div
-                    className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0"
+                  <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0"
                     style={{ border: '1.5px solid rgba(217, 164, 65, 0.3)' }}
                   >
                     <img src={logoImg} alt="TMNAA" className="w-full h-full object-cover" />
@@ -370,6 +368,9 @@ export function Header() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Search Overlay */}
+      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
     </>
   );
 }

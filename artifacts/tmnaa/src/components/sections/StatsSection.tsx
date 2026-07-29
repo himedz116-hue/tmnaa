@@ -227,6 +227,16 @@ export function StatsSection() {
     return () => clearInterval(interval);
   }, []);
 
+  // Listen for global play-clip event from SearchOverlay
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail?.id) setSelectedClip({ ...detail, url: '' });
+    };
+    window.addEventListener('play-clip', handler);
+    return () => window.removeEventListener('play-clip', handler);
+  }, []);
+
   return (
     <div className="py-20 md:py-28 px-6 space-y-16 relative">
       <div className="max-w-6xl mx-auto space-y-16">
