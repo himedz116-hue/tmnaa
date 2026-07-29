@@ -19,8 +19,13 @@ const formatNum = (n: number) => {
   return n.toLocaleString();
 };
 
-const formatDuration = (seconds: number) => {
-  return `${Math.round(seconds / 3600)}h`;
+const formatDuration = (minutes: number) => {
+  const d = Math.floor(minutes / 1440);
+  const h = Math.floor((minutes % 1440) / 60);
+  const m = Math.floor(minutes % 60);
+  if (d > 0) return `${d}d ${h}h ${m}m`;
+  if (h > 0) return `${h}h ${m}m`;
+  return `${m}m`;
 };
 
 const SkeletonRow = ({ delay }: { delay: number }) => (
