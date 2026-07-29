@@ -107,7 +107,7 @@ export function SupportSection() {
 
         {/* Payment Cards */}
         <div className="grid grid-cols-2 gap-4 mb-10">
-          <PaymentCard title="PAYPAL" url="https://creators.sa/tmnaa" color="#D4A84A" label="SUPPORT" delay={0.1} />
+          <PaymentCard title="PAYPAL" url="https://creators.sa/tmnaa" color="#0070BA" label="SUPPORT" delay={0.1} />
           <PaymentCard title="DOKAN" url="https://tip.dokan.sa/tmnaa" color="#FDE047" label="SEND TIP" iconImg="https://i.postimg.cc/Y0pfrW58/dokan-logo-white.png" delay={0.2} />
         </div>
 
