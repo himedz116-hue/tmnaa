@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BotrixLeaderboard } from '@/components/sections/BotrixLeaderboardSection';
 import { ClipModal } from '@/components/sections/ClipModal';
+import { VodModal } from '@/components/sections/VodModal';
 import { kickFetch } from '@/lib/kickApi';
 import type { ChannelInfo, LeaderboardData, LeaderboardEntry, Clip, Video } from '@/lib/types';
 
@@ -194,6 +195,7 @@ export function StatsSection() {
   const [clips, setClips] = useState<Clip[] | null>(null);
   const [videos, setVideos] = useState<Video[] | null>(null);
   const [selectedClip, setSelectedClip] = useState<Clip | null>(null);
+  const [selectedVideo, setSelectedVideo] = useState<{ source?: string; title?: string; session_title?: string; views?: number; view_count?: number } | null>(null);
 
   useEffect(() => {
     const fetchAll = () => {
@@ -351,10 +353,9 @@ export function StatsSection() {
             {videos ? videos.length > 0 ? (
               <div className="space-y-4">
                 {videos.map((video) => {
-                  const videoUUID = video.uuid || video.video?.uuid || video.id;
                   return (
-                    <a key={video.id} href={`https://kick.com/video/${videoUUID}`} target="_blank" rel="noopener noreferrer"
-                      className="flex gap-4 p-3 rounded-2xl bg-[#080808] hover:bg-[#111] border border-white/5 hover:border-white/10 transition-all group cursor-pointer shadow-lg hover:shadow-xl">
+                    <button key={video.id} onClick={() => setSelectedVideo({ source: video.source, title: video.title, session_title: video.session_title, views: video.views, view_count: video.view_count })}
+                      className="flex gap-4 p-3 rounded-2xl bg-[#080808] hover:bg-[#111] border border-white/5 hover:border-white/10 transition-all group cursor-pointer shadow-lg hover:shadow-xl text-left w-full">
                       <div className="relative w-36 aspect-video rounded-xl overflow-hidden shrink-0 bg-black shadow-inner">
                         <img src={video.thumbnail?.url || video.thumbnail?.src || (typeof video.thumbnail === 'string' ? video.thumbnail : '') || FALLBACK_IMAGE}
                           alt={video.session_title || video.title} onError={(e) => { (e.target as HTMLImageElement).src = FALLBACK_IMAGE; }}
@@ -373,7 +374,7 @@ export function StatsSection() {
                           <span>{formatNumber(video.views || video.view_count || 0)} views</span>
                         </div>
                       </div>
-                    </a>
+                    </button>
                   );
                 })}
               </div>
@@ -385,6 +386,7 @@ export function StatsSection() {
       </div>
       <AnimatePresence>
         {selectedClip && <ClipModal clip={selectedClip} onClose={() => setSelectedClip(null)} />}
+        {selectedVideo && <VodModal video={selectedVideo} onClose={() => setSelectedVideo(null)} />}
       </AnimatePresence>
     </div>
   );
