@@ -51,7 +51,8 @@ export function VodModal({ video, onClose }: VodModalProps) {
         ];
         for (const ep of endpoints) {
           try {
-            dbg.push(`fetch ${ep.split('/').slice(3).join('/')}`);
+            const epShort = ep.replace('https://kick.com/api/', '');
+            dbg.push(`fetch ${epShort}`);
             const res = await kickFetch(ep);
             if (!res) { dbg.push('null'); continue; }
             const keys = Object.keys(res).join(',');
@@ -66,9 +67,12 @@ export function VodModal({ video, onClose }: VodModalProps) {
         }
       }
 
-      if (!src) src = video.source || '';
       if (!src) {
-        dbg.push('no-src-fallback');
+        src = video.source || '';
+        if (src) dbg.push(`fallback-list-src`);
+      }
+      if (!src) {
+        dbg.push('no-src');
         setStatus('error');
         setDebugInfo(dbg.join(' | '));
         return;
@@ -79,29 +83,42 @@ export function VodModal({ video, onClose }: VodModalProps) {
 
       const v = videoRef.current;
 
-      if (Hls.isSupported()) {
-        const hls = new Hls({ enableWorker: false });
-        hls.loadSource(src);
-        hls.attachMedia(v);
-        hls.on(Hls.Events.MANIFEST_PARSED, () => { setStatus('ready'); v.play().catch(() => {}); });
-        hls.on(Hls.Events.ERROR, () => setStatus('error'));
-        return () => { hls.destroy(); setStatus('loading'); };
-      } else if (v.canPlayType('application/vnd.apple.mpegurl')) {
-        v.src = src;
-        v.addEventListener('loadedmetadata', () => { setStatus('ready'); v.play().catch(() => {}); });
-        v.addEventListener('error', () => setStatus('error'));
-        return () => { v.src = ''; };
-      } else {
-        setStatus('error');
-      }
+      let loaded = false;
+
+      const tryPlay = (url: string) => {
+        const cleanup = () => {};
+        if (Hls.isSupported()) {
+          const hls = new Hls({ enableWorker: false });
+          hls.loadSource(url);
+          hls.attachMedia(v);
+          hls.on(Hls.Events.MANIFEST_PARSED, () => { loaded = true; setStatus('ready'); v.play().catch(() => {}); });
+          hls.on(Hls.Events.ERROR, () => { if (!loaded) setStatus('error'); });
+          return () => hls.destroy();
+        } else if (v.canPlayType('application/vnd.apple.mpegurl')) {
+          v.src = url;
+          v.addEventListener('loadedmetadata', () => { loaded = true; setStatus('ready'); v.play().catch(() => {}); });
+          v.addEventListener('error', () => { if (!loaded) setStatus('error'); });
+          return () => { v.src = ''; };
+        } else {
+          setStatus('error');
+          return () => {};
+        }
+      };
+
+      const cleanup = tryPlay(src);
+
+      const timeout = setTimeout(() => {
+        if (!loaded) setStatus('error');
+      }, 10000);
+      return () => { cleanup(); clearTimeout(timeout); };
     };
 
-    const timer = setTimeout(() => {
-      if (status === 'loading') setShowFallback(true);
+    const fallbackTimer = setTimeout(() => {
+      setShowFallback(true);
     }, 15000);
 
     loadVideo();
-    return () => clearTimeout(timer);
+    return () => { clearTimeout(timeout); clearTimeout(fallbackTimer); };
   }, [video]);
 
   if (!video) return null;
