@@ -98,10 +98,7 @@ export function StreamAndChatSection() {
 
   useEffect(() => {
     if (chatRef.current) {
-      const { scrollHeight, clientHeight, scrollTop } = chatRef.current;
-      if (scrollHeight - scrollTop - clientHeight < 150 || messages.length <= 5) {
-        chatRef.current.scrollTo({ top: scrollHeight, behavior: 'smooth' });
-      }
+      chatRef.current.scrollTo({ top: chatRef.current.scrollHeight, behavior: 'smooth' });
     }
   }, [messages]);
 
