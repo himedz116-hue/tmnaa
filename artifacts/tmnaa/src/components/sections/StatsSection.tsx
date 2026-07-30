@@ -292,16 +292,20 @@ export function StatsSection() {
           </motion.div>
 
           {leaderboards ? (
-            <div className="flex flex-col md:grid md:grid-cols-3 gap-3 md:gap-8 items-start relative px-1 pt-6 md:pt-8">
-              <LeaderboardCard title="Weekly" subtitle="This Week" data={leaderboards.gifts_week} icon={<FlameIcon className="w-5 h-5 md:w-7 md:h-7" />} accentColor="rose" delay={100} emptyLabel="No active gifters this week" />
+            <div className="relative px-1 pt-6 md:pt-8 space-y-6 md:space-y-8">
               <LeaderboardCard title="All Time" subtitle="Legends" data={leaderboards.gifts} icon={<DiamondIcon className="w-5 h-5 md:w-7 md:h-7" />} accentColor="yellow" isMain delay={0} emptyLabel="No records found" />
-              <LeaderboardCard title="Monthly" subtitle="This Month" data={leaderboards.gifts_month} icon={<StarIcon className="w-5 h-5 md:w-7 md:h-7" />} accentColor="cyan" delay={200} emptyLabel="No active gifters this month" />
+              <div className="grid grid-cols-2 gap-3 md:gap-8 items-start">
+                <LeaderboardCard title="Weekly" subtitle="This Week" data={leaderboards.gifts_week} icon={<FlameIcon className="w-5 h-5 md:w-7 md:h-7" />} accentColor="rose" delay={100} emptyLabel="No active gifters this week" />
+                <LeaderboardCard title="Monthly" subtitle="This Month" data={leaderboards.gifts_month} icon={<StarIcon className="w-5 h-5 md:w-7 md:h-7" />} accentColor="cyan" delay={200} emptyLabel="No active gifters this month" />
+              </div>
             </div>
           ) : (
-            <div className="flex flex-col md:grid md:grid-cols-3 gap-3 md:gap-6 items-start relative px-1 pt-6 md:pt-8">
-              <Skeleton className="h-64 md:h-96 rounded-3xl" />
+            <div className="relative px-1 pt-6 md:pt-8 space-y-6 md:space-y-8">
               <Skeleton className="h-80 md:h-[480px] rounded-3xl" />
-              <Skeleton className="h-64 md:h-96 rounded-3xl" />
+              <div className="grid grid-cols-2 gap-3 md:gap-6">
+                <Skeleton className="h-64 md:h-96 rounded-3xl" />
+                <Skeleton className="h-64 md:h-96 rounded-3xl" />
+              </div>
             </div>
           )}
         </div>
