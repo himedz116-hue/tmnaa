@@ -80,11 +80,11 @@ function PaymentCard({ title, url, color, label, iconImg, delay = 0 }: PaymentCa
 
 export function SupportSection() {
   const alertTiers = [
-    { amount: '25$', bg: 'from-[#CD7F32]/20 to-[#CD7F32]/5', border: 'border-[#CD7F32]/30', text: 'from-[#CD7F32] to-[#FFE0C2]', glow: 'hover:shadow-[0_0_15px_rgba(205,127,50,0.4)]' },
-    { amount: '99$', bg: 'from-[#C0C0C0]/20 to-[#C0C0C0]/5', border: 'border-[#C0C0C0]/30', text: 'from-[#C0C0C0] to-[#FFFFFF]', glow: 'hover:shadow-[0_0_15px_rgba(192,192,192,0.4)]' },
-    { amount: '300$', bg: 'from-[#FFD700]/20 to-[#FFD700]/5', border: 'border-[#FFD700]/30', text: 'from-[#FFD700] to-[#FFF8DC]', glow: 'hover:shadow-[0_0_15px_rgba(255,215,0,0.4)]' },
-    { amount: '505$', bg: 'from-[#00BFFF]/20 to-[#00BFFF]/5', border: 'border-[#00BFFF]/30', text: 'from-[#00BFFF] to-[#E0FFFF]', glow: 'hover:shadow-[0_0_15px_rgba(0,191,255,0.4)]' },
-    { amount: '999$', bg: 'from-[#D4A84A]/30 to-[#D4A84A]/10', border: 'border-[#D4A84A]/50', text: 'from-[#D4A84A] to-[#FFF8DC]', glow: 'hover:shadow-[0_0_20px_rgba(212,168,74,0.6)]' },
+    { amount: '20$', bg: 'from-[#CD7F32]/20 to-[#CD7F32]/5', border: 'border-[#CD7F32]/30', text: 'from-[#CD7F32] to-[#FFE0C2]', glow: 'hover:shadow-[0_0_15px_rgba(205,127,50,0.4)]' },
+    { amount: '50$', bg: 'from-[#C0C0C0]/20 to-[#C0C0C0]/5', border: 'border-[#C0C0C0]/30', text: 'from-[#C0C0C0] to-[#FFFFFF]', glow: 'hover:shadow-[0_0_15px_rgba(192,192,192,0.4)]' },
+    { amount: '100$', bg: 'from-[#FFD700]/20 to-[#FFD700]/5', border: 'border-[#FFD700]/30', text: 'from-[#FFD700] to-[#FFF8DC]', glow: 'hover:shadow-[0_0_15px_rgba(255,215,0,0.4)]' },
+    { amount: '500$', bg: 'from-[#00BFFF]/20 to-[#00BFFF]/5', border: 'border-[#00BFFF]/30', text: 'from-[#00BFFF] to-[#E0FFFF]', glow: 'hover:shadow-[0_0_15px_rgba(0,191,255,0.4)]' },
+    { amount: '1000$', bg: 'from-[#D4A84A]/30 to-[#D4A84A]/10', border: 'border-[#D4A84A]/50', text: 'from-[#D4A84A] to-[#FFF8DC]', glow: 'hover:shadow-[0_0_20px_rgba(212,168,74,0.6)]' },
   ];
 
   return (
