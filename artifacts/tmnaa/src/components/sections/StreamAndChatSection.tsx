@@ -98,7 +98,10 @@ export function StreamAndChatSection() {
 
   useEffect(() => {
     if (chatRef.current) {
-      chatRef.current.scrollTo({ top: chatRef.current.scrollHeight, behavior: 'smooth' });
+      const el = chatRef.current;
+      requestAnimationFrame(() => {
+        el.scrollTo({ top: el.scrollHeight, behavior: 'instant' as ScrollBehavior });
+      });
     }
   }, [messages]);
 
