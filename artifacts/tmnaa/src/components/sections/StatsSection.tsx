@@ -292,16 +292,20 @@ export function StatsSection() {
           </motion.div>
 
           {leaderboards ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-8 items-start relative px-1 pt-6 md:pt-8">
-              <LeaderboardCard title="Weekly" subtitle="This Week" data={leaderboards.gifts_week} icon={<FlameIcon className="w-5 h-5 md:w-7 md:h-7" />} accentColor="rose" delay={100} emptyLabel="No active gifters this week" className="col-span-1 order-2 md:order-1" />
-              <LeaderboardCard title="All Time" subtitle="Legends" data={leaderboards.gifts} icon={<DiamondIcon className="w-5 h-5 md:w-7 md:h-7" />} accentColor="yellow" isMain delay={0} emptyLabel="No records found" className="col-span-2 md:col-span-1 order-1 md:order-2" />
-              <LeaderboardCard title="Monthly" subtitle="This Month" data={leaderboards.gifts_month} icon={<StarIcon className="w-5 h-5 md:w-7 md:h-7" />} accentColor="cyan" delay={200} emptyLabel="No active gifters this month" className="col-span-1 order-3" />
+            <div className="relative px-1 pt-6 md:pt-8 space-y-8">
+              <LeaderboardCard title="All Time" subtitle="Legends" data={leaderboards.gifts} icon={<DiamondIcon className="w-5 h-5 md:w-7 md:h-7" />} accentColor="yellow" isMain delay={0} emptyLabel="No records found" />
+              <div className="grid grid-cols-2 gap-3 md:gap-8 items-start">
+                <LeaderboardCard title="Weekly" subtitle="This Week" data={leaderboards.gifts_week} icon={<FlameIcon className="w-5 h-5 md:w-7 md:h-7" />} accentColor="rose" delay={100} emptyLabel="No active gifters this week" />
+                <LeaderboardCard title="Monthly" subtitle="This Month" data={leaderboards.gifts_month} icon={<StarIcon className="w-5 h-5 md:w-7 md:h-7" />} accentColor="cyan" delay={200} emptyLabel="No active gifters this month" />
+              </div>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6">
-              <Skeleton className="col-span-2 md:col-span-1 order-1 md:order-2 h-80 md:h-[480px] -mt-0 md:-mt-8 rounded-3xl" />
-              <Skeleton className="col-span-1 order-2 h-64 md:h-96 rounded-3xl" />
-              <Skeleton className="col-span-1 order-3 h-64 md:h-96 rounded-3xl" />
+            <div className="relative px-1 pt-6 md:pt-8 space-y-8">
+              <Skeleton className="h-80 md:h-[480px] rounded-3xl" />
+              <div className="grid grid-cols-2 gap-3 md:gap-6">
+                <Skeleton className="h-64 md:h-96 rounded-3xl" />
+                <Skeleton className="h-64 md:h-96 rounded-3xl" />
+              </div>
             </div>
           )}
         </div>
