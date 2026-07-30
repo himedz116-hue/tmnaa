@@ -293,19 +293,27 @@ export function StatsSection() {
 
           {leaderboards ? (
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-8 items-start relative px-1 pt-6 md:pt-8">
-              <div className="col-span-2 md:col-span-1">
+              <div className="col-span-2 md:col-span-1 order-1 md:order-2">
                 <LeaderboardCard title="All Time" subtitle="Legends" data={leaderboards.gifts} icon={<DiamondIcon className="w-5 h-5 md:w-7 md:h-7" />} accentColor="yellow" isMain delay={0} emptyLabel="No records found" />
               </div>
-              <LeaderboardCard title="Weekly" subtitle="This Week" data={leaderboards.gifts_week} icon={<FlameIcon className="w-5 h-5 md:w-7 md:h-7" />} accentColor="rose" delay={100} emptyLabel="No active gifters this week" />
-              <LeaderboardCard title="Monthly" subtitle="This Month" data={leaderboards.gifts_month} icon={<StarIcon className="w-5 h-5 md:w-7 md:h-7" />} accentColor="cyan" delay={200} emptyLabel="No active gifters this month" />
+              <div className="order-2 md:order-1">
+                <LeaderboardCard title="Weekly" subtitle="This Week" data={leaderboards.gifts_week} icon={<FlameIcon className="w-5 h-5 md:w-7 md:h-7" />} accentColor="rose" delay={100} emptyLabel="No active gifters this week" />
+              </div>
+              <div className="order-3">
+                <LeaderboardCard title="Monthly" subtitle="This Month" data={leaderboards.gifts_month} icon={<StarIcon className="w-5 h-5 md:w-7 md:h-7" />} accentColor="cyan" delay={200} emptyLabel="No active gifters this month" />
+              </div>
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6 items-start relative px-1 pt-6 md:pt-8">
-              <div className="col-span-2 md:col-span-1">
+              <div className="col-span-2 md:col-span-1 order-1 md:order-2">
                 <Skeleton className="h-80 md:h-[480px] rounded-3xl" />
               </div>
-              <Skeleton className="h-64 md:h-96 rounded-3xl" />
-              <Skeleton className="h-64 md:h-96 rounded-3xl" />
+              <div className="order-2 md:order-1">
+                <Skeleton className="h-64 md:h-96 rounded-3xl" />
+              </div>
+              <div className="order-3">
+                <Skeleton className="h-64 md:h-96 rounded-3xl" />
+              </div>
             </div>
           )}
         </div>
