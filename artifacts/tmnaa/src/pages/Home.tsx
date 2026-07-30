@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Header } from '@/components/Header';
 import { HeroSection } from '@/components/sections/HeroSection';
 import { StreamAndChatSection } from '@/components/sections/StreamAndChatSection';
@@ -6,6 +7,24 @@ import { LastSessionSection } from '@/components/sections/LastSessionSection';
 import { StatsSection } from '@/components/sections/StatsSection';
 
 export default function Home() {
+  const [isLive, setIsLive] = useState(false);
+
+  useEffect(() => {
+    const check = async () => {
+      try {
+        const res = await fetch('/api/kick?endpoint=' + encodeURIComponent('https://kick.com/api/v2/channels/tmnaa'));
+        if (!res.ok) return;
+        const data = await res.json();
+        const live = data?.livestream || data?.live_stream;
+        const liveBool = live && (live.is_live === true || live.is_live === 1);
+        setIsLive(liveBool);
+      } catch { setIsLive(false); }
+    };
+    check();
+    const interval = setInterval(check, 60000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#090807] text-white overflow-x-hidden">
       <Header />
@@ -14,7 +33,7 @@ export default function Home() {
         <HeroSection />
         <StreamAndChatSection />
         <SupportSection />
-        <LastSessionSection />
+        {!isLive && <LastSessionSection />}
         <StatsSection />
       </main>
 
