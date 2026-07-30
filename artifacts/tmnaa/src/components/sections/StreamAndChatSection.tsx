@@ -185,7 +185,7 @@ export function StreamAndChatSection() {
             whileInView={{ y: 0, opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2, ease: easeOut }}
-            className="w-full lg:w-[380px] h-[520px] lg:h-auto rounded-2xl overflow-hidden flex flex-col"
+            className="w-full lg:w-[380px] h-[520px] rounded-2xl overflow-hidden flex flex-col shrink-0"
             style={{
               background: 'linear-gradient(160deg, rgba(13,4,4,0.95), rgba(20,8,8,0.92))',
               border: '1px solid rgba(139,37,0,0.25)',
