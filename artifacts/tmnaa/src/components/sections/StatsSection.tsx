@@ -189,6 +189,80 @@ function LeaderboardCard({ title, subtitle, data, icon, accentColor, isMain, del
   );
 }
 
+function SubInfoModal({ onClose }: { onClose: () => void }) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', onKey);
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = '';
+    };
+  }, [onClose]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8"
+      onClick={onClose}
+    >
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-xl" />
+
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0, y: 40 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.9, opacity: 0, y: 40 }}
+        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-xl bg-[#0a0a0a] rounded-[32px] overflow-hidden border border-white/10 shadow-2xl shadow-black/60 max-h-[90vh] overflow-y-auto premium-scroll"
+      >
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#D4A84A]/40 to-transparent" />
+
+        <div className="p-5 md:p-7 space-y-5" dir="rtl">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-[#111] border border-white/10 flex items-center justify-center text-[#D4A84A] shadow-lg">
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                  <circle cx="12" cy="12" r="9" />
+                  <path strokeLinecap="round" d="M12 11v5" />
+                  <path strokeLinecap="round" d="M12 8h.01" />
+                </svg>
+              </div>
+              <h3 className="text-lg md:text-xl font-black text-white tracking-tight">SUB BADGES</h3>
+            </div>
+
+            <button
+              onClick={onClose}
+              className="relative w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all duration-300 flex items-center justify-center group/btn shrink-0"
+            >
+              <svg className="w-4 h-4 text-white/60 group-hover/btn:text-white/90 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <p className="text-[15px] leading-8 text-white/85 font-medium">
+            {`دام الاغلب يبي يشترك والراجحي ما يشتغل في كيك، الحل تطبيق برق وتضيفون بطاقة رقمية والمعلومات، وبيتصلون توثقون البطاقة.
+بعد ما تصدرون البطاقة يمديك تربطها في أبل باي وتضيف فيها فلوس.
+وبس تشترك بالكيك، تختار طريقة الدفع أبل باي وغيّرت إلى بطاقة برق، ووقتها تقدر تشترك.
+الصور توضح أكثر.`}
+          </p>
+
+          <div className="space-y-3">
+            <img src="/assets/IMG_3192.webp" alt="شرح الاشتراك 1" className="w-full rounded-2xl border border-white/10" loading="lazy" />
+            <img src="/assets/IMG_3191.webp" alt="شرح الاشتراك 2" className="w-full rounded-2xl border border-white/10" loading="lazy" />
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 export function StatsSection() {
   const [channelInfo, setChannelInfo] = useState<ChannelInfo | null>(null);
   const [leaderboards, setLeaderboards] = useState<LeaderboardData | null>(null);
@@ -196,6 +270,7 @@ export function StatsSection() {
   const [videos, setVideos] = useState<Video[] | null>(null);
   const [selectedClip, setSelectedClip] = useState<Clip | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<{ source?: string; title?: string; session_title?: string; views?: number; view_count?: number; uuid?: string } | null>(null);
+  const [showSubInfo, setShowSubInfo] = useState(false);
 
   useEffect(() => {
     const fetchAll = () => {
@@ -256,7 +331,17 @@ export function StatsSection() {
                 {channelInfo.subscriber_badges && channelInfo.subscriber_badges.length > 0 && (
                   <>
                     <div className="flex flex-col items-center md:items-end">
-                      <span className="text-[10px] uppercase tracking-[0.25em] font-bold" style={{ color: 'rgba(247,243,238,0.3)' }}>SUB BADGES</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] uppercase tracking-[0.25em] font-bold" style={{ color: 'rgba(247,243,238,0.3)' }}>SUB BADGES</span>
+                        <button
+                          onClick={() => setShowSubInfo(true)}
+                          aria-label="لماذا لا أستطيع الاشتراك؟"
+                          title="لماذا لا أستطيع الاشتراك؟"
+                          className="w-4 h-4 rounded-full border border-white/20 bg-white/5 hover:bg-[#D4A84A]/20 hover:border-[#D4A84A]/50 transition-all duration-300 flex items-center justify-center cursor-pointer shrink-0 group/info"
+                        >
+                          <span className="text-[9px] font-black text-white/50 group-hover/info:text-[#D4A84A] leading-none">i</span>
+                        </button>
+                      </div>
                       <div className="h-0.5 w-8 bg-[#D4A84A]/50 rounded-full mt-1 hidden md:block" />
                     </div>
                     <div className="flex flex-wrap justify-center md:justify-end gap-2">
@@ -402,6 +487,7 @@ export function StatsSection() {
       <AnimatePresence>
         {selectedClip && <ClipModal clip={selectedClip} onClose={() => setSelectedClip(null)} />}
         {selectedVideo && <VodModal video={selectedVideo} onClose={() => setSelectedVideo(null)} />}
+        {showSubInfo && <SubInfoModal onClose={() => setShowSubInfo(false)} />}
       </AnimatePresence>
     </div>
   );
