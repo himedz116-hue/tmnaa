@@ -246,46 +246,49 @@ function SubInfoModal({ onClose }: { onClose: () => void }) {
             </button>
           </div>
 
-          <p className="text-[15px] leading-8 text-white/85 font-medium whitespace-pre-line">
-            {`دام كثير ناس يواجهون مشكلة إن بطاقة الراجحي ما تشتغل في اشتراك Kick، فهذا الحل اللي نجح مع كثير: 👇
-
-① ادخل على البطاقات
-
-
-من تطبيق برق، افتح قسم البطاقات ثم اختر إصدار بطاقة جديدة.
-
-
-② أصدر بطاقة برق الرقمية
-
-
-اختر بطاقة رمز الريال السعودي وأكمل خطوات الإصدار، وبعدها وثّق البطاقة إذا تواصل معك التطبيق.
-
-
-③ اشحن البطاقة
-
-
-بعد تفعيل البطاقة، أضف فيها الرصيد اللي تبي تستخدمه للاشتراك.
-
-
-④ اختر Apple Pay
-
-
-وقت الاشتراك في Kick، لا تدفع مباشرة بالبطاقة، اختر Apple Pay كطريقة للدفع.
-
-
-⑤ غيّر وسيلة الدفع إلى بطاقة برق
-
-
-داخل Apple Pay اختر بطاقة برق بدل أي بطاقة ثانية، ثم أكمل عملية الدفع.
-
-
-✅ وبكذا يتم الاشتراك في Kick بدون مشاكل بإذن الله.
-الصور فوق توضح كل خطوة بالترتيب، فقط اتبعها من 1 إلى 5.`}
+          <p className="text-[15px] leading-8 text-white/85 font-medium">
+            دام كثير ناس يواجهون مشكلة إن بطاقة الراجحي ما تشتغل في اشتراك Kick، فهذا الحل اللي نجح مع كثير: 👇
           </p>
 
-          <div className="space-y-3">
-            <img src="/assets/IMG_3191.webp" alt="شرح الاشتراك 2" className="w-full rounded-2xl border border-white/10" loading="lazy" />
-            <img src="/assets/IMG_3192.webp" alt="شرح الاشتراك 1" className="w-full rounded-2xl border border-white/10" loading="lazy" />
+          <div className="space-y-4">
+            {[
+              { n: 1, title: 'ادخل على البطاقات', desc: 'من تطبيق برق، افتح قسم البطاقات ثم اختر إصدار بطاقة جديدة.' },
+              { n: 2, title: 'أصدر بطاقة برق الرقمية', desc: 'اختر بطاقة رمز الريال السعودي وأكمل خطوات الإصدار، وبعدها وثّق البطاقة إذا تواصل معك التطبيق.' },
+              { n: 3, title: 'اشحن البطاقة', desc: 'بعد تفعيل البطاقة، أضف فيها الرصيد اللي تبي تستخدمه للاشتراك.' },
+              { n: 4, title: 'اختر Apple Pay', desc: 'وقت الاشتراك في Kick، لا تدفع مباشرة بالبطاقة، اختر Apple Pay كطريقة للدفع.' },
+              { n: 5, title: 'غيّر وسيلة الدفع إلى بطاقة برق', desc: 'داخل Apple Pay اختر بطاقة برق بدل أي بطاقة ثانية، ثم أكمل عملية الدفع.' },
+            ].map((step) => (
+              <div key={step.n} className="flex gap-3 items-start">
+                <div className="relative shrink-0 mt-0.5">
+                  <div className="absolute inset-0 bg-[#D4A84A] blur-md opacity-30 rounded-full" />
+                  <div className="relative w-8 h-8 rounded-full bg-gradient-to-br from-[#F5D489] via-[#D4A84A] to-[#8a6a1f] flex items-center justify-center text-sm font-black text-black shadow-lg">
+                    {step.n}
+                  </div>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-[15px] font-bold text-white leading-snug">{step.title}</h4>
+                  <p className="text-[13px] leading-7 text-white/65 mt-1">{step.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="rounded-2xl bg-gradient-to-r from-[#D4A84A]/10 via-[#D4A84A]/5 to-transparent border border-[#D4A84A]/20 p-4">
+            <p className="text-[14px] leading-7 text-white/90 font-medium">
+              ✅ وبكذا يتم الاشتراك في Kick بدون مشاكل بإذن الله.
+            </p>
+            <p className="text-[12px] leading-6 text-white/50 mt-1">
+              الصور فوق توضح كل خطوة بالترتيب، فقط اتبعها من 1 إلى 5.
+            </p>
+          </div>
+
+          <div className="space-y-4 pt-1">
+            <div className="rounded-2xl overflow-hidden border border-[#D4A84A]/20 bg-gradient-to-b from-white/[0.04] to-transparent p-1.5 shadow-lg">
+              <img src="/assets/IMG_3191.webp" alt="شرح الاشتراك - الخطوة" className="w-full rounded-xl" loading="lazy" />
+            </div>
+            <div className="rounded-2xl overflow-hidden border border-[#D4A84A]/20 bg-gradient-to-b from-white/[0.04] to-transparent p-1.5 shadow-lg">
+              <img src="/assets/IMG_3192.webp" alt="شرح الاشتراك - الخطوة" className="w-full rounded-xl" loading="lazy" />
+            </div>
           </div>
         </div>
       </motion.div>
