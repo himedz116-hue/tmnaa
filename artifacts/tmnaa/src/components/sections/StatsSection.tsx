@@ -246,16 +246,46 @@ function SubInfoModal({ onClose }: { onClose: () => void }) {
             </button>
           </div>
 
-          <p className="text-[15px] leading-8 text-white/85 font-medium">
-            {`دام الاغلب يبي يشترك والراجحي ما يشتغل في كيك، الحل تطبيق برق وتضيفون بطاقة رقمية والمعلومات، وبيتصلون توثقون البطاقة.
-بعد ما تصدرون البطاقة يمديك تربطها في أبل باي وتضيف فيها فلوس.
-وبس تشترك بالكيك، تختار طريقة الدفع أبل باي وغيّرت إلى بطاقة برق، ووقتها تقدر تشترك.
-الصور توضح أكثر.`}
+          <p className="text-[15px] leading-8 text-white/85 font-medium whitespace-pre-line">
+            {`دام كثير ناس يواجهون مشكلة إن بطاقة الراجحي ما تشتغل في اشتراك Kick، فهذا الحل اللي نجح مع كثير: 👇
+
+① ادخل على البطاقات
+
+
+من تطبيق برق، افتح قسم البطاقات ثم اختر إصدار بطاقة جديدة.
+
+
+② أصدر بطاقة برق الرقمية
+
+
+اختر بطاقة رمز الريال السعودي وأكمل خطوات الإصدار، وبعدها وثّق البطاقة إذا تواصل معك التطبيق.
+
+
+③ اشحن البطاقة
+
+
+بعد تفعيل البطاقة، أضف فيها الرصيد اللي تبي تستخدمه للاشتراك.
+
+
+④ اختر Apple Pay
+
+
+وقت الاشتراك في Kick، لا تدفع مباشرة بالبطاقة، اختر Apple Pay كطريقة للدفع.
+
+
+⑤ غيّر وسيلة الدفع إلى بطاقة برق
+
+
+داخل Apple Pay اختر بطاقة برق بدل أي بطاقة ثانية، ثم أكمل عملية الدفع.
+
+
+✅ وبكذا يتم الاشتراك في Kick بدون مشاكل بإذن الله.
+الصور فوق توضح كل خطوة بالترتيب، فقط اتبعها من 1 إلى 5.`}
           </p>
 
           <div className="space-y-3">
-            <img src="/assets/IMG_3192.webp" alt="شرح الاشتراك 1" className="w-full rounded-2xl border border-white/10" loading="lazy" />
             <img src="/assets/IMG_3191.webp" alt="شرح الاشتراك 2" className="w-full rounded-2xl border border-white/10" loading="lazy" />
+            <img src="/assets/IMG_3192.webp" alt="شرح الاشتراك 1" className="w-full rounded-2xl border border-white/10" loading="lazy" />
           </div>
         </div>
       </motion.div>
@@ -332,15 +362,15 @@ export function StatsSection() {
                   <>
                     <div className="flex flex-col items-center md:items-end">
                       <div className="flex items-center gap-2">
-                        <span className="text-[10px] uppercase tracking-[0.25em] font-bold" style={{ color: 'rgba(247,243,238,0.3)' }}>SUB BADGES</span>
                         <button
                           onClick={() => setShowSubInfo(true)}
                           aria-label="لماذا لا أستطيع الاشتراك؟"
                           title="لماذا لا أستطيع الاشتراك؟"
-                          className="w-4 h-4 rounded-full border border-white/20 bg-white/5 hover:bg-[#D4A84A]/20 hover:border-[#D4A84A]/50 transition-all duration-300 flex items-center justify-center cursor-pointer shrink-0 group/info"
+                          className="w-4 h-4 rounded-full border border-[#D4A84A]/40 bg-[#D4A84A]/10 hover:bg-[#D4A84A]/30 hover:border-[#D4A84A] hover:scale-110 shadow-[0_0_10px_rgba(212,168,74,0.15)] transition-all duration-300 flex items-center justify-center cursor-pointer shrink-0 group/info"
                         >
-                          <span className="text-[9px] font-black text-white/50 group-hover/info:text-[#D4A84A] leading-none">i</span>
+                          <span className="text-[9px] font-black text-[#D4A84A] group-hover/info:text-black leading-none">i</span>
                         </button>
+                        <span className="text-[10px] uppercase tracking-[0.25em] font-bold" style={{ color: 'rgba(247,243,238,0.3)' }}>SUB BADGES</span>
                       </div>
                       <div className="h-0.5 w-8 bg-[#D4A84A]/50 rounded-full mt-1 hidden md:block" />
                     </div>
