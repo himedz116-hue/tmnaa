@@ -13,6 +13,7 @@ const navLinks = [
   { href: '#support', label: 'SUPPORT' },
   { href: '#stats', label: 'STATS' },
   { href: '#clips', label: 'CLIPS' },
+  { href: '#moderators', label: 'MODS' },
 ];
 
 export function Header() {

@@ -4,6 +4,7 @@ import { BotrixLeaderboard } from '@/components/sections/BotrixLeaderboardSectio
 import { ClipModal } from '@/components/sections/ClipModal';
 import { VodModal } from '@/components/sections/VodModal';
 import { kickFetch } from '@/lib/kickApi';
+import { ModeratorsSection } from '@/components/sections/ModeratorsSection';
 import type { ChannelInfo, LeaderboardData, LeaderboardEntry, Clip, Video } from '@/lib/types';
 
 const easeOut = [0.22, 1, 0.36, 1] as const;
@@ -440,6 +441,9 @@ export function StatsSection() {
         <div className="pt-8">
           <BotrixLeaderboard />
         </div>
+
+        {/* Moderators */}
+        <ModeratorsSection />
 
         {/* Clips & VODs */}
         <div id="clips" className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 pt-8 border-t border-white/5">
