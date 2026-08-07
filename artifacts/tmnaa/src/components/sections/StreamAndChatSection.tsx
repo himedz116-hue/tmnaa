@@ -115,7 +115,7 @@ export function StreamAndChatSection() {
   };
 
   return (
-    <section className="py-20 md:py-28 px-6 relative overflow-hidden">
+    <section id="stream" className="py-20 md:py-28 px-6 relative overflow-hidden">
       {/* Warm vignette overlay */}
       <div className="absolute inset-0 pointer-events-none" style={{
         background: 'radial-gradient(ellipse at 50% 0%, rgba(139,37,0,0.08) 0%, transparent 70%), radial-gradient(ellipse at 50% 100%, rgba(212,168,74,0.05) 0%, transparent 60%)'
