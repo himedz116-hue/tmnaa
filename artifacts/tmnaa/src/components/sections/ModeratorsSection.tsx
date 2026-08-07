@@ -198,7 +198,7 @@ export function ModeratorsSection() {
                         <path d="M9 12l2 2 4-4" />
                       </svg>
                       <span className="text-[9px] font-bold tracking-[0.12em]" style={{ fontFamily: 'Cairo, sans-serif', color: isFeatured ? '#F7E6B8' : '#D9A441' }}>
-                        {isFeatured ? 'رئيس المشرفين' : 'مشرف'}
+                        مشرف
                       </span>
                     </div>
                   </div>

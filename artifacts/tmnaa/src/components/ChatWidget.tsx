@@ -388,11 +388,11 @@ export default function ChatWidget() {
     if (liveData?.isLive) {
       const isMT = liveData.category.toLowerCase().includes('grand theft auto');
       p += `\n\n# حالة البث (مهم جداً: البث شغال الحين!)`;
-      p += `\nالبث شغال الحين �\udd34 بعنوان: "${liveData.title}"`;
+      p += `\nالبث شغال الحين 🔴 بعنوان: "${liveData.title}"`;
       p += `\nاللعبة: ${liveData.category}`;
       p += `\nالمشاهدين: ${liveData.viewers}`;
       if (isMT) p += `\nملاحظة: الحين يلعب في سيرفر Mystery Town [emote:tmnaascraptmnaaMTONTOPTMNAA]`;
-      p += `\nرابط البث: [link:شاهد البث الحين �\udd34:https://kick.com/tmnaa]`;
+      p += `\nرابط البث: [link:شاهد البث دحيننن 🔴:https://kick.com/tmnaa]`;
       p += `\nإذا سألك أحد وش الحين يبث أو كيف أشوف البث الحالي: ضع زر البث المباشر: [nav:البث المباشر:stream]`;
     } else {
       p += `\n\n# حالة البث\nالبث مو شغال الحين. إذا سألك أحد عن البث قل له البث مو شغال الحين بس تابع القناة عشان يجيك إشعار لما يفتح.`;
