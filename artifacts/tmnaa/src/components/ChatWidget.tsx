@@ -291,7 +291,7 @@ export default function ChatWidget() {
 
   const apiKeys = useMemo(() => { const s = import.meta.env.VITE_GROQ_API_KEYS || ''; return s.split(',').map((x: string) => x.trim()).filter(Boolean); }, []);
 
-  const renderText = useCallback((text: string, sendFn: (text: string) => void) => {
+  const renderText = useCallback((text: string, sendFn: (text: string) => void, fullText?: string) => {
     const processMarkdown = (str: string, pk: number) => {
       const parts = str.split(/(\*\*.*?\*\*)/g);
       return parts.map((bp, i) => {
@@ -313,6 +313,10 @@ export default function ChatWidget() {
     const parts: any[] = [];
     const suggests: string[] = [];
     const re = /\[social:([a-zA-Z0-9_]+):([^:]*):(https?:\/\/[^\]]+)\]|\[emote:([^\]]+)\]|\[suggest:([^\]]+)\]|\[link:([^:]+):(https?:\/\/[^\]]+)\]|\[nav:([^:]+):([^\]]+)\]|\[mod:([^\]]+)\]|(tmnaasalutetmnaa|tmnaatmnaalaughtmnaatmnaalaugh|tmnaascraptmnaaMTONTOPTMNAA)/g;
+    const suggestSource = fullText ?? text;
+    let sm: RegExpExecArray | null;
+    while ((sm = re.exec(suggestSource)) !== null) { if (sm[5]) suggests.push(sm[5]); }
+
     let li = 0, m, k = 0;
     while ((m = re.exec(text)) !== null) {
       if (m.index > li) parts.push(processMarkdown(text.slice(li, m.index), k++));
@@ -350,7 +354,7 @@ export default function ChatWidget() {
           />
         );
       } else if (m[5]) {
-        suggests.push(m[5]);
+        // suggestions collected from full text above, render at bottom
       } else if (m[6]) {
         const linkName = m[6], linkUrl = m[7];
         parts.push(
@@ -589,7 +593,7 @@ export default function ChatWidget() {
               {m.role === 'assistant' && <img src="/tmnaa-bot-avatar.png" alt="b" style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover', border: `1px solid ${TH.border}`, flexShrink: 0 }} />}
               <div style={{ maxWidth: '78%', padding: '10px 14px', fontSize: '13px', lineHeight: '1.6', borderRadius: m.role === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px', direction: 'rtl', textAlign: 'right', whiteSpace: 'pre-wrap', wordBreak: 'break-word',
                 ...(m.role === 'user' ? { background: 'linear-gradient(135deg, #B8860B, #8A6A1F)', color: '#fff', boxShadow: '0 2px 12px rgba(212,168,74,0.3)' } : { background: 'rgba(30,22,12,0.85)', color: TH.text, border: `1px solid ${TH.borderLight}` }) }}>
-                {m.role === 'assistant' ? renderText(typingIndex === i ? typingText : m.content, send) : m.content}
+                {m.role === 'assistant' ? renderText(typingIndex === i ? typingText : m.content, send, typingIndex === i ? m.content : undefined) : m.content}
                 {typingIndex === i && <motion.span animate={{ opacity: [1,0] }} transition={{ duration: 0.5, repeat: Infinity }} className="inline-block w-0.5 h-4 bg-[#D4A84A] ml-1 align-middle" />}
               </div>
             </motion.div>
