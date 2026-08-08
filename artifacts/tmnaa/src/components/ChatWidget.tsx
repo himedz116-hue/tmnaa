@@ -311,6 +311,7 @@ export default function ChatWidget() {
     };
 
     const parts: any[] = [];
+    const suggests: string[] = [];
     const re = /\[social:([a-zA-Z0-9_]+):([^:]*):(https?:\/\/[^\]]+)\]|\[emote:([^\]]+)\]|\[suggest:([^\]]+)\]|\[link:([^:]+):(https?:\/\/[^\]]+)\]|\[nav:([^:]+):([^\]]+)\]|\[mod:([^\]]+)\]|(tmnaasalutetmnaa|tmnaatmnaalaughtmnaatmnaalaugh|tmnaascraptmnaaMTONTOPTMNAA)/g;
     let li = 0, m, k = 0;
     while ((m = re.exec(text)) !== null) {
@@ -336,33 +337,20 @@ export default function ChatWidget() {
         const imgSrc = `/emotes/${filename}`;
         
         parts.push(
-          <span key={`e${k++}`} className="flex justify-center my-2">
-            <img 
-              src={imgSrc} 
-              alt={emoteName}
-              className="block h-11 w-11 object-contain"
-              style={{ animation: 'emote-bounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both' }}
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.outerHTML = `<span class="text-red-500 text-[10px] font-bold">❌ Error loading: ${imgSrc}</span>`;
-              }}
-            />
-          </span>
+          <img 
+            key={`e${k++}`} 
+            src={imgSrc} 
+            alt={emoteName}
+            className="inline-block h-10 mx-1 align-middle"
+            style={{ animation: 'emote-bounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both' }}
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.outerHTML = `<span class="text-red-500 text-[10px] font-bold">❌ Error loading: ${imgSrc}</span>`;
+            }}
+          />
         );
       } else if (m[5]) {
-        const suggestion = m[5];
-        parts.push(
-          <button 
-            key={`sug${k++}`} 
-            onClick={() => sendFn(suggestion)}
-            className="group relative flex items-center justify-end w-full mt-2.5 px-4 py-2.5 bg-gradient-to-l from-[#D4A84A]/10 to-transparent hover:from-[#D4A84A]/20 border border-[#D4A84A]/20 hover:border-[#D4A84A]/50 rounded-xl text-[#F5EBD5] hover:text-white text-[13px] font-medium transition-all duration-300 shadow-sm hover:shadow-[0_0_15px_rgba(212,168,74,0.15)] overflow-hidden"
-          >
-            <span className="relative z-10 text-right w-full flex items-center justify-end gap-2">
-              {suggestion}
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-4 h-4 text-[#D4A84A] group-hover:scale-110 transition-transform"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
-            </span>
-          </button>
-        );
+        suggests.push(m[5]);
       } else if (m[6]) {
         const linkName = m[6], linkUrl = m[7];
         parts.push(
@@ -419,6 +407,26 @@ export default function ChatWidget() {
       li = re.lastIndex;
     }
     if (li < text.length) parts.push(processMarkdown(text.slice(li), k++));
+
+    if (suggests.length) {
+      parts.push(
+        <div key={`sugg${k++}`} className="mt-3 w-full">
+          {suggests.map((s) => (
+            <button
+              key={`sug${s}`}
+              onClick={() => sendFn(s)}
+              className="group relative flex items-center justify-end w-full mt-2 px-4 py-2.5 bg-gradient-to-l from-[#D4A84A]/10 to-transparent hover:from-[#D4A84A]/20 border border-[#D4A84A]/20 hover:border-[#D4A84A]/50 rounded-xl text-[#F5EBD5] hover:text-white text-[13px] font-medium transition-all duration-300 shadow-sm hover:shadow-[0_0_15px_rgba(212,168,74,0.15)] overflow-hidden"
+            >
+              <span className="relative z-10 text-right w-full flex items-center justify-end gap-2">
+                {s}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-4 h-4 text-[#D4A84A] group-hover:scale-110 transition-transform"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+              </span>
+            </button>
+          ))}
+        </div>
+      );
+    }
+
     return parts.length ? parts : processMarkdown(text, k++);
   }, [counts]);
 
