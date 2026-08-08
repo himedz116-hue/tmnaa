@@ -89,11 +89,11 @@ export function ModeratorsSection() {
           </div>
 
           <h2 className="text-4xl md:text-5xl font-black mb-3" style={{ fontFamily: 'Cairo, sans-serif' }}>
-            <span className="metal-shine drop-shadow-[0_3px_10px_rgba(0,0,0,0.8)]">المشرفين</span>
+            <span className="metal-shine drop-shadow-[0_3px_10px_rgba(0,0,0,0.8)]">MODERATORS</span>
           </h2>
 
           <p className="text-sm md:text-[15px] font-medium leading-7 max-w-md" style={{ fontFamily: 'Tajawal, sans-serif', color: 'rgba(247,243,238,0.45)' }}>
-            حرّاس مجتمع تمنا — فريق قوي يخدم الجمهور ويحمي البث
+            Guardians of the TMNAA community — a strong team serving the audience and protecting the stream
           </p>
         </motion.div>
 
