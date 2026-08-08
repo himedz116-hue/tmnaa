@@ -291,7 +291,7 @@ export default function ChatWidget() {
 
   const apiKeys = useMemo(() => { const s = import.meta.env.VITE_GROQ_API_KEYS || ''; return s.split(',').map((x: string) => x.trim()).filter(Boolean); }, []);
 
-  const renderText = useCallback((text: string, sendFn: (text: string) => void, fullText?: string) => {
+  const renderText = useCallback((text: string, sendFn: (text: string) => void) => {
     const processMarkdown = (str: string, pk: number) => {
       const parts = str.split(/(\*\*.*?\*\*)/g);
       return parts.map((bp, i) => {
@@ -313,10 +313,6 @@ export default function ChatWidget() {
     const parts: any[] = [];
     const suggests: string[] = [];
     const re = /\[social:([a-zA-Z0-9_]+):([^:]*):(https?:\/\/[^\]]+)\]|\[emote:([^\]]+)\]|\[suggest:([^\]]+)\]|\[link:([^:]+):(https?:\/\/[^\]]+)\]|\[nav:([^:]+):([^\]]+)\]|\[mod:([^\]]+)\]|(tmnaasalutetmnaa|tmnaatmnaalaughtmnaatmnaalaugh|tmnaascraptmnaaMTONTOPTMNAA)/g;
-    const suggestSource = fullText ?? text;
-    let sm: RegExpExecArray | null;
-    while ((sm = re.exec(suggestSource)) !== null) { if (sm[5]) suggests.push(sm[5]); }
-
     let li = 0, m, k = 0;
     while ((m = re.exec(text)) !== null) {
       if (m.index > li) parts.push(processMarkdown(text.slice(li, m.index), k++));
@@ -354,7 +350,7 @@ export default function ChatWidget() {
           />
         );
       } else if (m[5]) {
-        // suggestions collected from full text above, render at bottom
+        suggests.push(m[5]);
       } else if (m[6]) {
         const linkName = m[6], linkUrl = m[7];
         parts.push(
@@ -415,17 +411,24 @@ export default function ChatWidget() {
     if (suggests.length) {
       parts.push(
         <div key={`sugg${k++}`} className="mt-3 w-full">
-          {suggests.map((s) => (
-            <button
+          {suggests.map((s, si) => (
+            <motion.div
               key={`sug${s}`}
-              onClick={() => sendFn(s)}
-              className="group relative flex items-center justify-end w-full mt-2 px-4 py-2.5 bg-gradient-to-l from-[#D4A84A]/10 to-transparent hover:from-[#D4A84A]/20 border border-[#D4A84A]/20 hover:border-[#D4A84A]/50 rounded-xl text-[#F5EBD5] hover:text-white text-[13px] font-medium transition-all duration-300 shadow-sm hover:shadow-[0_0_15px_rgba(212,168,74,0.15)] overflow-hidden"
+              initial={{ opacity: 0, y: -12, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ type: 'spring', stiffness: 320, damping: 26, delay: 0.25 + si * 0.18 }}
+              className="w-full"
             >
-              <span className="relative z-10 text-right w-full flex items-center justify-end gap-2">
-                {s}
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-4 h-4 text-[#D4A84A] group-hover:scale-110 transition-transform"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
-              </span>
-            </button>
+              <button
+                onClick={() => sendFn(s)}
+                className="group relative flex items-center justify-end w-full mt-2 px-4 py-2.5 bg-gradient-to-l from-[#D4A84A]/10 to-transparent hover:from-[#D4A84A]/20 border border-[#D4A84A]/20 hover:border-[#D4A84A]/50 rounded-xl text-[#F5EBD5] hover:text-white text-[13px] font-medium transition-all duration-300 shadow-sm hover:shadow-[0_0_15px_rgba(212,168,74,0.15)] overflow-hidden"
+              >
+                <span className="relative z-10 text-right w-full flex items-center justify-end gap-2">
+                  {s}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-4 h-4 text-[#D4A84A] group-hover:scale-110 transition-transform"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+                </span>
+              </button>
+            </motion.div>
           ))}
         </div>
       );
@@ -593,7 +596,7 @@ export default function ChatWidget() {
               {m.role === 'assistant' && <img src="/tmnaa-bot-avatar.png" alt="b" style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover', border: `1px solid ${TH.border}`, flexShrink: 0 }} />}
               <div style={{ maxWidth: '78%', padding: '10px 14px', fontSize: '13px', lineHeight: '1.6', borderRadius: m.role === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px', direction: 'rtl', textAlign: 'right', whiteSpace: 'pre-wrap', wordBreak: 'break-word',
                 ...(m.role === 'user' ? { background: 'linear-gradient(135deg, #B8860B, #8A6A1F)', color: '#fff', boxShadow: '0 2px 12px rgba(212,168,74,0.3)' } : { background: 'rgba(30,22,12,0.85)', color: TH.text, border: `1px solid ${TH.borderLight}` }) }}>
-                {m.role === 'assistant' ? renderText(typingIndex === i ? typingText : m.content, send, typingIndex === i ? m.content : undefined) : m.content}
+                {m.role === 'assistant' ? renderText(typingIndex === i ? typingText : m.content, send) : m.content}
                 {typingIndex === i && <motion.span animate={{ opacity: [1,0] }} transition={{ duration: 0.5, repeat: Infinity }} className="inline-block w-0.5 h-4 bg-[#D4A84A] ml-1 align-middle" />}
               </div>
             </motion.div>
