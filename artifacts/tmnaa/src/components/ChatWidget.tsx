@@ -336,17 +336,18 @@ export default function ChatWidget() {
         const imgSrc = `/emotes/${filename}`;
         
         parts.push(
-          <img 
-            key={`e${k++}`} 
-            src={imgSrc} 
-            alt={emoteName}
-            className="inline-block h-10 mx-1 align-middle"
-            style={{ animation: 'emote-bounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both' }}
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              target.outerHTML = `<span class="text-red-500 text-[10px] font-bold">❌ Error loading: ${imgSrc}</span>`;
-            }}
-          />
+          <span key={`e${k++}`} className="flex justify-center my-2">
+            <img 
+              src={imgSrc} 
+              alt={emoteName}
+              className="block h-11 w-11 object-contain"
+              style={{ animation: 'emote-bounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both' }}
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.outerHTML = `<span class="text-red-500 text-[10px] font-bold">❌ Error loading: ${imgSrc}</span>`;
+              }}
+            />
+          </span>
         );
       } else if (m[5]) {
         const suggestion = m[5];
