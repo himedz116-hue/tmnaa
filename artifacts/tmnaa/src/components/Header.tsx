@@ -150,11 +150,36 @@ export function Header() {
     setSearchQuery('');
   }, []);
 
+  const scrollToSection = useCallback((e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    const el = document.querySelector(href);
+    if (!el) return;
+    const headerOffset = 120;
+    const top = (el as HTMLElement).getBoundingClientRect().top + window.scrollY - headerOffset;
+    window.scrollTo({ top, behavior: 'smooth' });
+    setActiveSection(href.replace('#', ''));
+
+    const target = el as HTMLElement;
+    target.style.transition = 'box-shadow 0.9s ease';
+    target.style.boxShadow = '0 0 0px rgba(217,164,65,0)';
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        target.style.boxShadow = '0 0 60px rgba(217,164,65,0.25)';
+        setTimeout(() => { target.style.boxShadow = '0 0 0px rgba(217,164,65,0)'; }, 900);
+      });
+    });
+
+    history.replaceState(null, '', href);
+  }, []);
+
   const NavLink = ({ href, label, layoutId }: { href: string; label: string; layoutId: string }) => {
     const isActive = activeSection === href.replace('#', '');
     return (
-      <a
+      <motion.a
         href={href}
+        onClick={(e) => scrollToSection(e, href)}
+        whileHover={{ y: -2 }}
+        whileTap={{ scale: 0.94 }}
         className="relative px-6 py-2 text-[13px] font-bold tracking-[0.08em] transition-all duration-400 group/nav"
         style={{
           color: isActive ? '#D9A441' : 'rgba(247, 243, 238, 0.7)',
@@ -180,7 +205,7 @@ export function Header() {
         <span className="absolute inset-0 rounded-xl opacity-0 group-hover/nav:opacity-100 transition-opacity duration-300"
           style={{ background: 'linear-gradient(135deg, rgba(217, 164, 65, 0.04), rgba(255, 122, 24, 0.02))' }}
         />
-      </a>
+      </motion.a>
     );
   };
 
@@ -526,10 +551,10 @@ export function Header() {
                     <motion.a
                       key={href}
                       href={href}
+                      onClick={(e) => { e.preventDefault(); setMobileOpen(false); setTimeout(() => scrollToSection(e, href), 250); }}
                       initial={{ opacity: 0, x: -15 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: i * 0.04 }}
-                      onClick={() => setMobileOpen(false)}
                       className="px-4 py-3.5 rounded-xl text-sm font-bold tracking-wider transition-all"
                       style={{
                         color: isActive ? '#D9A441' : 'rgba(247, 243, 238, 0.7)',
