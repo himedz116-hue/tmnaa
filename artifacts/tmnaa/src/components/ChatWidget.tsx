@@ -315,7 +315,7 @@ export default function ChatWidget() {
     const re = /\[social:([a-zA-Z0-9_]+):([^:]*):(https?:\/\/[^\]]+)\]|\[emote:([^\]]+)\]|\[suggest:([^\]]+)\]|\[link:([^:]+):(https?:\/\/[^\]]+)\]|\[nav:([^:]+):([^\]]+)\]|\[mod:([^\]]+)\]|(tmnaasalutetmnaa|tmnaatmnaalaughtmnaatmnaalaugh|tmnaascraptmnaaMTONTOPTMNAA)/g;
     let li = 0, m, k = 0;
     while ((m = re.exec(text)) !== null) {
-      if (m.index > li) parts.push(processMarkdown(text.slice(li, m.index), k++));
+      if (m.index > li) parts.push(processMarkdown(text.slice(li, m.index).replace(/\s+$/, ''), k++));
       
       if (m[1]) {
         const sname = m[1], scount = m[2], surl = m[3];
@@ -406,11 +406,11 @@ export default function ChatWidget() {
       }
       li = re.lastIndex;
     }
-    if (li < text.length) parts.push(processMarkdown(text.slice(li), k++));
+    if (li < text.length) parts.push(processMarkdown(text.slice(li).replace(/\s+$/, ''), k++));
 
     if (suggests.length) {
       parts.push(
-        <div key={`sugg${k++}`} className="mt-3 w-full">
+        <div key={`sugg${k++}`} className="mt-2 w-full">
           {suggests.map((s, si) => (
             <motion.div
               key={`sug${s}`}
@@ -421,7 +421,7 @@ export default function ChatWidget() {
             >
               <button
                 onClick={() => sendFn(s)}
-                className="group relative flex items-center justify-end w-full mt-2 px-4 py-2.5 bg-gradient-to-l from-[#D4A84A]/10 to-transparent hover:from-[#D4A84A]/20 border border-[#D4A84A]/20 hover:border-[#D4A84A]/50 rounded-xl text-[#F5EBD5] hover:text-white text-[13px] font-medium transition-all duration-300 shadow-sm hover:shadow-[0_0_15px_rgba(212,168,74,0.15)] overflow-hidden"
+                className="group relative flex items-center justify-end w-full mt-1.5 px-4 py-2 bg-gradient-to-l from-[#D4A84A]/10 to-transparent hover:from-[#D4A84A]/20 border border-[#D4A84A]/20 hover:border-[#D4A84A]/50 rounded-xl text-[#F5EBD5] hover:text-white text-[13px] font-medium transition-all duration-300 shadow-sm hover:shadow-[0_0_15px_rgba(212,168,74,0.15)] overflow-hidden"
               >
                 <span className="relative z-10 text-right w-full flex items-center justify-end gap-2">
                   {s}
@@ -591,7 +591,13 @@ export default function ChatWidget() {
 
         <div className="premium-scroll" style={{ flex: 1, overflowY: 'auto', padding: '16px', background: 'linear-gradient(180deg, #0F0A05 0%, #1A1308 100%)', display: 'flex', flexDirection: 'column', gap: '12px', '--scr-from': 'rgba(212,168,74,0.4)', '--scr-to': 'rgba(184,134,11,0.2)' } as any} ref={scrollRef}>
           {messages.map((m, i) => (
-            <motion.div key={i} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}
+            <motion.div
+              key={i}
+              initial={m.role === 'assistant' && i === messages.length - 1 ? { opacity: 0, y: -28, scale: 0.9 } : { opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={m.role === 'assistant' && i === messages.length - 1
+                ? { type: 'spring', stiffness: 320, damping: 22, delay: 0.05 }
+                : { duration: 0.2 }}
               style={{ display: 'flex', gap: '8px', justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start', alignItems: 'flex-end' }}>
               {m.role === 'assistant' && <img src="/tmnaa-bot-avatar.png" alt="b" style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover', border: `1px solid ${TH.border}`, flexShrink: 0 }} />}
               <div style={{ maxWidth: '78%', padding: '10px 14px', fontSize: '13px', lineHeight: '1.6', borderRadius: m.role === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px', direction: 'rtl', textAlign: 'right', whiteSpace: 'pre-wrap', wordBreak: 'break-word',
