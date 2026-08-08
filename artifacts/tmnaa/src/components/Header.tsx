@@ -285,7 +285,7 @@ export function Header() {
           </div>
 
           {/* Right Menu */}
-          <div className="hidden lg:flex items-center gap-0.5 lg:mr-52">
+          <div className="hidden lg:flex items-center gap-0.5 lg:mr-64">
             {navLinks.slice(2).map(({ href, label }) => (
               <NavLink key={href} href={href} label={label} layoutId="navActiveLine2" />
             ))}
